@@ -90,6 +90,9 @@
     [encodedUserInfo setValue:userInfo.fullName forKey:@"fullName"];
     [encodedUserInfo setValue:userInfo.emailAddress forKey:@"emailAddress"];
     [encodedUserInfo setValue:userInfo.smsNumber forKey:@"smsNumber"];
+    //[encodedUserInfo setValue:userInfo.vehicleMake forKey:@"vehicleMake"];
+    //[encodedUserInfo setValue:userInfo.vehicleModel forKey:@"vehicleModel"];
+    //[encodedUserInfo setValue:userInfo.vehicleLicensePlate forKey:@"vehicleLicensePlate"];
     return encodedUserInfo;
 }
 
@@ -195,11 +198,17 @@
     NSString* fullname = [arguments objectForKey:@"fullName"];
     NSString* emailAddress = [arguments objectForKey:@"emailAddress"];
     NSString* smsNumber = [arguments objectForKey:@"smsNumber"];
+    // NSString* vehicleMake = [arguments objectForKey:@"vehicleMake"];
+    // NSString* vehicleModel = [arguments objectForKey:@"vehicleModel"];
+    // NSString* vehicleLicensePlate = [arguments objectForKey:@"vehicleLicensePlate"];
     
     CSUserInfo* userInfo = [[CSUserInfo alloc] init];
     userInfo.fullName = fullname;
     userInfo.emailAddress = emailAddress;
     userInfo.smsNumber = smsNumber;
+    // userInfo.vehicleMake = vehicleMake;
+    // userInfo.vehicleModel = vehicleModel;
+    // userInfo.vehicleLicensePlate = vehicleLicensePlate;
     
     [CSUserSession currentSession].userInfo = userInfo;
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];

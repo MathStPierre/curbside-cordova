@@ -117,9 +117,12 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
             result.put("fullName", userInfo.getFullName());
             result.put("emailAddress", userInfo.getEmailAddress());
             result.put("smsNumber", userInfo.getSmsNumber());
+            //result.put("vehicleMake", userInfo.getVehicleMake());
+            //result.put("vehicleModel", userInfo.getVehicleModel());
+            //result.put("vehicleLicensePlate", userInfo.getVehicleLicensePlate());
             return result;
         } else
-        return object;
+            return object;
     }
 
     private void subscribe(Type type, final String eventName) {
@@ -223,7 +226,7 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                 // String to = args.getString(3);
                 listenNextEvent(Type.START_TRIP, callbackContext);
                 // if (from == null || to == null) {
-                    CSUserSession.getInstance().startTripToSiteWithIdentifier(siteID, trackToken);
+                CSUserSession.getInstance().startTripToSiteWithIdentifier(siteID, trackToken);
                 // } else {
                 //     DateTime dtFrom = DateTime.parse(from);
                 //     DateTime dtTo = DateTime.parse(to);
@@ -252,11 +255,19 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
             } else if (action.equals("getUserInfo")) {
                 // callbackContext.success((JSONObject) jsonEncode(CSUserSession.getInstance().getCustomerInfo()));
             } else if (action.equals("setUserInfo")) {
-                JSONObject userInfo = args.getJSONObject(0);
-                String fullName = userInfo.has("fullName") ? userInfo.getString("fullName") : null;
-                String emailAddress = userInfo.has("emailAddress") ?userInfo.getString("emailAddress") : null;
-                String smsNumber = userInfo.has("smsNumber") ?userInfo.getString("smsNumber") : null;
-                CSUserSession.getInstance().setUserInfo(new CSUserInfo(fullName, emailAddress, smsNumber));
+                JSONObject userInfoData = args.getJSONObject(0);
+                String fullName = userInfoData.has("fullName") ? userInfoData.getString("fullName") : null;
+                String emailAddress = userInfoData.has("emailAddress") ? userInfoData.getString("emailAddress") : null;
+                String smsNumber = userInfoData.has("smsNumber") ? userInfoData.getString("smsNumber") : null;
+
+                // String vehicleMake = userInfoData.has("vehicleMake") ? userInfoData.getString("vehicleMake") : null;
+                // String vehicleModel = userInfoData.has("vehicleModel") ? userInfoData.getString("vehicleModel") : null;
+                // String vehicleLicensePlate = userInfoData.has("vehicleLicensePlate") ? userInfoData.getString("vehicleLicensePlate") : null;
+
+                CSUserInfo userInfo = new CSUserInfo(fullName, emailAddress, smsNumber);
+                // CSUserInfo userInfo = new CSUserInfo(fullName, emailAddress, smsNumber, vehicleMake, vehicleModel, vehicleLicensePlate);
+
+                CSUserSession.getInstance().setUserInfo(userInfo);
                 callbackContext.success();
             } else {
                 callbackContext.error("invalid action:" + action);
