@@ -10,6 +10,7 @@
     <engines>
         <engine name="cordova-ios" version=">=4.3.0" />
     </engines>
+    <dependency id="cordova-promise-polyfill"></dependency>
     <!-- android -->
     <platform name="android">
         <js-module src="www/plugin.js" name="plugin">

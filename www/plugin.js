@@ -28,7 +28,7 @@ function execCb(name, cb) {
             },
             PLUGIN_NAME,
             name,
-            args,
+            args
         );
     });
 }
@@ -117,7 +117,7 @@ function initEventListener() {
                 trigger("encounteredError", args.result);
             },
             PLUGIN_NAME,
-            "eventListener",
+            "eventListener"
         );
         eventListenerStarted = true;
     }
