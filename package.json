@@ -1,6 +1,6 @@
 {
     "name": "curbside-cordova",
-    "version": "3.0.0",
+    "version": "3.0.1",
     "cordova": {
         "id": "curbside-cordova",
         "platforms": ["android", "ios"]
