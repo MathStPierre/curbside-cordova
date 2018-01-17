@@ -90,9 +90,9 @@
     [encodedUserInfo setValue:userInfo.fullName forKey:@"fullName"];
     [encodedUserInfo setValue:userInfo.emailAddress forKey:@"emailAddress"];
     [encodedUserInfo setValue:userInfo.smsNumber forKey:@"smsNumber"];
-    //[encodedUserInfo setValue:userInfo.vehicleMake forKey:@"vehicleMake"];
-    //[encodedUserInfo setValue:userInfo.vehicleModel forKey:@"vehicleModel"];
-    //[encodedUserInfo setValue:userInfo.vehicleLicensePlate forKey:@"vehicleLicensePlate"];
+    [encodedUserInfo setValue:userInfo.vehicleMake forKey:@"vehicleMake"];
+    [encodedUserInfo setValue:userInfo.vehicleModel forKey:@"vehicleModel"];
+    [encodedUserInfo setValue:userInfo.vehicleLicensePlate forKey:@"vehicleLicensePlate"];
     return encodedUserInfo;
 }
 
@@ -114,10 +114,13 @@
             return @"networkError";
             break;
     }
-    return @"\"unknown\"";
+    return @"unknown";
 }
 
 -(NSDate *)dateForRFC3339DateTimeString:(NSString *)rfc3339DateTimeString {
+    if(rfc3339DateTimeString == nil){
+        return nil;
+    }
     
     NSDateFormatter *rfc3339DateFormatter = [[NSDateFormatter alloc] init];
     
@@ -198,17 +201,17 @@
     NSString* fullname = [arguments objectForKey:@"fullName"];
     NSString* emailAddress = [arguments objectForKey:@"emailAddress"];
     NSString* smsNumber = [arguments objectForKey:@"smsNumber"];
-    // NSString* vehicleMake = [arguments objectForKey:@"vehicleMake"];
-    // NSString* vehicleModel = [arguments objectForKey:@"vehicleModel"];
-    // NSString* vehicleLicensePlate = [arguments objectForKey:@"vehicleLicensePlate"];
+    NSString* vehicleMake = [arguments objectForKey:@"vehicleMake"];
+    NSString* vehicleModel = [arguments objectForKey:@"vehicleModel"];
+    NSString* vehicleLicensePlate = [arguments objectForKey:@"vehicleLicensePlate"];
     
     CSUserInfo* userInfo = [[CSUserInfo alloc] init];
     userInfo.fullName = fullname;
     userInfo.emailAddress = emailAddress;
     userInfo.smsNumber = smsNumber;
-    // userInfo.vehicleMake = vehicleMake;
-    // userInfo.vehicleModel = vehicleModel;
-    // userInfo.vehicleLicensePlate = vehicleLicensePlate;
+    userInfo.vehicleMake = vehicleMake;
+    userInfo.vehicleModel = vehicleModel;
+    userInfo.vehicleLicensePlate = vehicleLicensePlate;
     
     [CSUserSession currentSession].userInfo = userInfo;
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
@@ -218,8 +221,6 @@
     CDVPluginResult* pluginResult = nil;
     NSString* siteID = [command.arguments objectAtIndex:0];
     NSString* trackToken = [command.arguments objectAtIndex:1];
-    // NSString* from = [command.arguments objectAtIndex:2];
-    // NSString* to = [command.arguments objectAtIndex:3];
     
     if (siteID == nil) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"siteID was null"];
@@ -228,13 +229,31 @@
     } else if ([CSUserSession currentSession].trackingIdentifier == nil) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"trackingIdentifier was null"];
     } else {
-        // if (from == nil || to == nil){
-            [[CSUserSession currentSession] startTripToSiteWithIdentifier:siteID trackToken:trackToken];
-        // } else {
-        //     NSDate *fromDate = [self dateForRFC3339DateTimeString:from];
-        //     NSDate *toDate = [self dateForRFC3339DateTimeString:to];
-        //     [[CSUserSession currentSession] startTripToSiteWithIdentifier:siteID trackToken:trackToken etaFromDate:fromDate toDate:toDate]
-        // }
+        [[CSUserSession currentSession] startTripToSiteWithIdentifier:siteID trackToken:trackToken];
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    }
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+-(void)startTripToSiteWithIdentifierAndEta:(CDVInvokedUrlCommand*)command {
+    CDVPluginResult* pluginResult = nil;
+    NSString* siteID = [command.arguments objectAtIndex:0];
+    NSString* trackToken = [command.arguments objectAtIndex:1];
+    NSString* from = [command.arguments objectAtIndex:2];
+    NSString* to = [command.arguments objectAtIndex:3];
+    
+    if (siteID == nil) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"siteID was null"];
+    } else if (trackToken == nil) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"trackToken was null"];
+    } else if (from == nil) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"from was null"];
+    } else if ([CSUserSession currentSession].trackingIdentifier == nil) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"trackingIdentifier was null"];
+    } else {
+        NSDate *fromDate = [self dateForRFC3339DateTimeString:from];
+        NSDate *toDate = [self dateForRFC3339DateTimeString:to];
+        [[CSUserSession currentSession] startTripToSiteWithIdentifier:siteID trackToken:trackToken etaFromDate:fromDate toDate:toDate]
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     }
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -288,15 +307,15 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-// - (void)getUserInfo:(CDVInvokedUrlCommand*)command {
-//     CSUserInfo userInfo = [CSUserSession currentSession].userInfo;
-//     CDVPluginResult* pluginResult;
-//     if (userInfo != nil) {
-//         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:[self userInfoEncode:userInfo]];
-//     } else {
-//         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-//     }
-//     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-// }
+- (void)getUserInfo:(CDVInvokedUrlCommand*)command {
+    CSUserInfo userInfo = [CSUserSession currentSession].userInfo;
+    CDVPluginResult* pluginResult;
+    if (userInfo != nil) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:[self userInfoEncode:userInfo]];
+    } else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    }
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
 
 @end

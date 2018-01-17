@@ -15,6 +15,8 @@
 
 - (void)startTripToSiteWithIdentifier:(CDVInvokedUrlCommand*)command;
 
+- (void)startTripToSiteWithIdentifierAndEta:(CDVInvokedUrlCommand*)command;
+
 - (void)completeTripToSiteWithIdentifier:(CDVInvokedUrlCommand*)command;
 
 - (void)completeAllTrips:(CDVInvokedUrlCommand*)command;
