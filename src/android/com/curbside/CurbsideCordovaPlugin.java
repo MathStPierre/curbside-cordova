@@ -3,24 +3,10 @@
 package com.curbside;
 
 
-import android.Manifest;
-import android.app.Activity;
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.util.ArraySet;
-import android.util.Log;
-
 import com.curbside.sdk.CSSite;
 import com.curbside.sdk.CSTripInfo;
 import com.curbside.sdk.CSUserSession;
 import com.curbside.sdk.CSUserStatus;
-import com.curbside.sdk.OperationStatus;
-import com.curbside.sdk.OperationType;
-import com.curbside.sdk.credentialprovider.TokenCurbsideCredentialProvider;
 import com.curbside.sdk.event.Event;
 import com.curbside.sdk.event.Path;
 import com.curbside.sdk.event.Status;
@@ -36,24 +22,17 @@ import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Set;
 
 import rx.Subscriber;
 import rx.exceptions.OnErrorNotImplementedException;
-import rx.functions.Action1;
 
 public class CurbsideCordovaPlugin extends CordovaPlugin {
 
-    private static final int PERMISSION_REQUEST_CODE = 1;
     private CallbackContext eventListenerCallbackContext;
-    private ArrayList<PluginResult> pluginResults = new ArrayList<PluginResult>();
+    private ArrayList<PluginResult> pluginResults = new ArrayList<>();
 
     @Override
     public void initialize(final CordovaInterface cordova, final CordovaWebView webView) {
@@ -232,7 +211,6 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                     DateTime dtFrom = DateTime.parse(from);
                     DateTime dtTo = to == null ? null : DateTime.parse(to);
                     CSUserSession.getInstance().startTripToSiteWithIdentifierAndETA(siteID, trackToken, dtFrom, dtTo);
-                }
             } else if (action.equals("completeTripToSiteWithIdentifier")) {
                 String siteID = args.getString(0);
                 String trackToken = args.getString(1);
@@ -253,9 +231,7 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                 callbackContext.success(CSUserSession.getInstance().getTrackingIdentifier());
             } else if (action.equals("getTrackedSites")) {
                 callbackContext.success((JSONObject) jsonEncode(CSUserSession.getInstance().getTrackedSites()));
-            } else if (action.equals("getUserInfo")) {
-                callbackContext.success((JSONObject) jsonEncode(CSUserSession.getInstance().getCustomerInfo()));
-            } else if (action.equals("setUserInfo")) {
+            }  else if (action.equals("setUserInfo")) {
                 JSONObject userInfoData = args.getJSONObject(0);
                 String fullName = userInfoData.has("fullName") ? userInfoData.getString("fullName") : null;
                 String emailAddress = userInfoData.has("emailAddress") ? userInfoData.getString("emailAddress") : null;

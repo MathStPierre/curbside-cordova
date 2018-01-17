@@ -253,7 +253,7 @@
     } else {
         NSDate *fromDate = [self dateForRFC3339DateTimeString:from];
         NSDate *toDate = [self dateForRFC3339DateTimeString:to];
-        [[CSUserSession currentSession] startTripToSiteWithIdentifier:siteID trackToken:trackToken etaFromDate:fromDate toDate:toDate]
+        [[CSUserSession currentSession] startTripToSiteWithIdentifier:siteID trackToken:trackToken etaFromDate:fromDate toDate:toDate];
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     }
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -308,7 +308,7 @@
 }
 
 - (void)getUserInfo:(CDVInvokedUrlCommand*)command {
-    CSUserInfo userInfo = [CSUserSession currentSession].userInfo;
+    CSUserInfo* userInfo = [CSUserSession currentSession].userInfo;
     CDVPluginResult* pluginResult;
     if (userInfo != nil) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:[self userInfoEncode:userInfo]];
