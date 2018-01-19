@@ -118,7 +118,7 @@
 }
 
 -(NSDate *)dateForRFC3339DateTimeString:(NSString *)rfc3339DateTimeString {
-    if(rfc3339DateTimeString == nil){
+    if(!rfc3339DateTimeString){
         return nil;
     }
     
@@ -169,7 +169,7 @@
     [message setValue:event forKey:@"event"];
     [message setValue:result forKey:@"result"];
     CDVPluginResult* eventResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:message];
-    if (_eventListenerCallbackId == nil) {
+    if (!_eventListenerCallbackId) {
         [_pendingEventResults addObject:eventResult];
     } else {
         [self.commandDelegate sendPluginResult:eventResult callbackId:_eventListenerCallbackId];
@@ -222,9 +222,9 @@
     NSString* siteID = [command.arguments objectAtIndex:0];
     NSString* trackToken = [command.arguments objectAtIndex:1];
     
-    if (siteID == nil) {
+    if (!siteID) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"siteID was null"];
-    } else if (trackToken == nil) {
+    } else if (!trackToken) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"trackToken was null"];
     } else if ([CSUserSession currentSession].trackingIdentifier == nil) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"trackingIdentifier was null"];
@@ -242,11 +242,11 @@
     NSString* from = [command.arguments objectAtIndex:2];
     NSString* to = [command.arguments objectAtIndex:3];
     
-    if (siteID == nil) {
+    if (!siteID) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"siteID was null"];
-    } else if (trackToken == nil) {
+    } else if (!trackToken) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"trackToken was null"];
-    } else if (from == nil) {
+    } else if (!from) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"from was null"];
     } else if ([CSUserSession currentSession].trackingIdentifier == nil) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"trackingIdentifier was null"];
@@ -283,7 +283,7 @@
     NSString* siteID = [command.arguments objectAtIndex:0];
     NSString* trackToken = [command.arguments objectAtIndex:1];
     
-    if (siteID == nil) {
+    if (!siteID) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"siteID was null"];
     } else {
         [[CSUserSession currentSession] cancelTripToSiteWithIdentifier:siteID trackToken:trackToken];
