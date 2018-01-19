@@ -230,6 +230,19 @@ document.addEventListener("deviceready", function() {
   });
 
   /**
+   * Start a trip tracking the user pickup of "UNIQUE_TRACK_TOKEN" to the site identified by the "SITE_ID". Call this
+   * method when the application thinks its appropriate to start tracking the user eg. Order is ready to be picked up at
+   * the site. This information is persisted across relaunch. toDate can be null.
+   *
+   * If an error occurs because of an invalid session state, permissions or authentication with the ARRIVE server,
+   * the callback will be informed with the reason as to why startTripToSiteWithIdentifier failed.
+   **/
+  Curbside.startTripToSiteWithIdentifierAndEta("SITE_ID", "UNIQUE_TRACK_TOKEN", fromDate, toDate, function(error){
+
+  });
+
+
+  /**
    * Completes the trip for the user to the site identified by the "SITE_ID" with the given "UNIQUE_TRACK_TOKEN".
    * If no trackToken is specified, then *all* trips to this site  will be completed.
    *
@@ -297,7 +310,7 @@ All functions return a Promise as an alternative to a callback.
 
 * setTrackingIdentifier
 * startTripToSiteWithIdentifier
-* startTripToSiteWithIdentifier
+* startTripToSiteWithIdentifierAndEta
 * completeTripToSiteWithIdentifier
 * completeAllTrips
 * cancelTripToSiteWithIdentifier

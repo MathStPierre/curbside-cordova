@@ -3,24 +3,10 @@
 package com.curbside;
 
 
-import android.Manifest;
-import android.app.Activity;
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.util.ArraySet;
-import android.util.Log;
-
 import com.curbside.sdk.CSSite;
 import com.curbside.sdk.CSTripInfo;
 import com.curbside.sdk.CSUserSession;
 import com.curbside.sdk.CSUserStatus;
-import com.curbside.sdk.OperationStatus;
-import com.curbside.sdk.OperationType;
-import com.curbside.sdk.credentialprovider.TokenCurbsideCredentialProvider;
 import com.curbside.sdk.event.Event;
 import com.curbside.sdk.event.Path;
 import com.curbside.sdk.event.Status;
@@ -36,24 +22,17 @@ import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Set;
 
 import rx.Subscriber;
 import rx.exceptions.OnErrorNotImplementedException;
-import rx.functions.Action1;
 
 public class CurbsideCordovaPlugin extends CordovaPlugin {
 
-    private static final int PERMISSION_REQUEST_CODE = 1;
     private CallbackContext eventListenerCallbackContext;
-    private ArrayList<PluginResult> pluginResults = new ArrayList<PluginResult>();
+    private ArrayList<PluginResult> pluginResults = new ArrayList<>();
 
     @Override
     public void initialize(final CordovaInterface cordova, final CordovaWebView webView) {
@@ -68,10 +47,22 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
         }
 
         subscribe(Type.CAN_NOTIFY_MONITORING_USER_AT_SITE, "canNotifyMonitoringSessionUserAtSite");
+        subscribe(Type.APPROACHING_SITE, "userApproachingSite");
+        subscribe(Type.ARRIVED_AT_SITE, "userArrivedAtSite");
+        subscribe(Type.UPDATED_TRACKED_SITES, "updatedTrackedSites");
+    }
 
-        //subscribe(Type.APPROACHING_SITE, "userApproachingSite");
-        //subscribe(Type.ARRIVED_AT_SITE, "userArrivedAtSite");
-        //subscribe(Type.UPDATED_TRACKED_SITES, "updatedTrackedSites");
+    private String getStringArg(JSONArray args, int i) {
+        String value = null;
+        try {
+            value = args.getString(i);
+            if (value.equals("null")) {
+                return null;
+            }
+        } catch (JSONException e) {
+            return null;
+        }
+        return value;
     }
 
     private Object jsonEncode(Object object) throws JSONException {
@@ -117,9 +108,9 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
             result.put("fullName", userInfo.getFullName());
             result.put("emailAddress", userInfo.getEmailAddress());
             result.put("smsNumber", userInfo.getSmsNumber());
-            //result.put("vehicleMake", userInfo.getVehicleMake());
-            //result.put("vehicleModel", userInfo.getVehicleModel());
-            //result.put("vehicleLicensePlate", userInfo.getVehicleLicensePlate());
+            result.put("vehicleMake", userInfo.getVehicleMake());
+            result.put("vehicleModel", userInfo.getVehicleModel());
+            result.put("vehicleLicensePlate", userInfo.getVehicleLicensePlate());
             return result;
         } else
             return object;
@@ -211,7 +202,7 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
             pluginResults.clear();
         } else {
             if (action.equals("setTrackingIdentifier")) {
-                String trackingIdentifier = args.getString(0);
+                String trackingIdentifier = this.getStringArg(args, 0);
                 if (trackingIdentifier != null) {
                     listenNextEvent(Type.REGISTER_TRACKING_ID, callbackContext);
                     CSUserSession.getInstance().registerTrackingIdentifier(trackingIdentifier);
@@ -220,29 +211,36 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                     CSUserSession.getInstance().unregisterTrackingIdentifier();
                 }
             } else if (action.equals("startTripToSiteWithIdentifier")) {
-                String siteID = args.getString(0);
-                String trackToken = args.getString(1);
-                // String from = args.getString(2);
-                // String to = args.getString(3);
+                String siteID = this.getStringArg(args, 0);
+                String trackToken = this.getStringArg(args, 1);
                 listenNextEvent(Type.START_TRIP, callbackContext);
-                // if (from == null || to == null) {
                 CSUserSession.getInstance().startTripToSiteWithIdentifier(siteID, trackToken);
-                // } else {
-                //     DateTime dtFrom = DateTime.parse(from);
-                //     DateTime dtTo = DateTime.parse(to);
-                //     CSUserSession.getInstance().startTripToSiteWithIdentifierAndETA(siteID, trackToken, dtFrom, dtTo);
-                // }
+            } else if (action.equals("startTripToSiteWithIdentifierAndEta")) {
+                String siteID = this.getStringArg(args, 0);
+                String trackToken = this.getStringArg(args, 1);
+                String from = this.getStringArg(args, 2);
+                String to = this.getStringArg(args, 3);
+                listenNextEvent(Type.START_TRIP, callbackContext);
+                DateTime dtFrom = null;
+                DateTime dtTo = null;
+                try {
+                    dtFrom = DateTime.parse(from);
+                    dtTo = to == null ? null : DateTime.parse(to);
+                } catch (Exception e) {
+
+                }
+                CSUserSession.getInstance().startTripToSiteWithIdentifierAndETA(siteID, trackToken, dtFrom, dtTo);
             } else if (action.equals("completeTripToSiteWithIdentifier")) {
-                String siteID = args.getString(0);
-                String trackToken = args.getString(1);
+                String siteID = this.getStringArg(args, 0);
+                String trackToken = this.getStringArg(args, 1);
                 listenNextEvent(Type.COMPLETE_TRIP, callbackContext);
                 CSUserSession.getInstance().completeTripToSiteWithIdentifier(siteID, trackToken);
             } else if (action.equals("completeAllTrips")) {
                 CSUserSession.getInstance().completeAllTrips();
                 listenNextEvent(Type.COMPLETE_ALL_TRIPS, callbackContext);
             } else if (action.equals("cancelTripToSiteWithIdentifier")) {
-                String siteID = args.getString(0);
-                String trackToken = args.getString(1);
+                String siteID = this.getStringArg(args, 0);
+                String trackToken = this.getStringArg(args, 1);
                 listenNextEvent(Type.CANCEL_TRIP, callbackContext);
                 CSUserSession.getInstance().cancelTripToSiteWithIdentifier(siteID, trackToken);
             } else if (action.equals("cancelAllTrips")) {
@@ -252,20 +250,17 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                 callbackContext.success(CSUserSession.getInstance().getTrackingIdentifier());
             } else if (action.equals("getTrackedSites")) {
                 callbackContext.success((JSONObject) jsonEncode(CSUserSession.getInstance().getTrackedSites()));
-            } else if (action.equals("getUserInfo")) {
-                // callbackContext.success((JSONObject) jsonEncode(CSUserSession.getInstance().getCustomerInfo()));
             } else if (action.equals("setUserInfo")) {
                 JSONObject userInfoData = args.getJSONObject(0);
                 String fullName = userInfoData.has("fullName") ? userInfoData.getString("fullName") : null;
                 String emailAddress = userInfoData.has("emailAddress") ? userInfoData.getString("emailAddress") : null;
                 String smsNumber = userInfoData.has("smsNumber") ? userInfoData.getString("smsNumber") : null;
 
-                // String vehicleMake = userInfoData.has("vehicleMake") ? userInfoData.getString("vehicleMake") : null;
-                // String vehicleModel = userInfoData.has("vehicleModel") ? userInfoData.getString("vehicleModel") : null;
-                // String vehicleLicensePlate = userInfoData.has("vehicleLicensePlate") ? userInfoData.getString("vehicleLicensePlate") : null;
+                String vehicleMake = userInfoData.has("vehicleMake") ? userInfoData.getString("vehicleMake") : null;
+                String vehicleModel = userInfoData.has("vehicleModel") ? userInfoData.getString("vehicleModel") : null;
+                String vehicleLicensePlate = userInfoData.has("vehicleLicensePlate") ? userInfoData.getString("vehicleLicensePlate") : null;
 
-                CSUserInfo userInfo = new CSUserInfo(fullName, emailAddress, smsNumber);
-                // CSUserInfo userInfo = new CSUserInfo(fullName, emailAddress, smsNumber, vehicleMake, vehicleModel, vehicleLicensePlate);
+                CSUserInfo userInfo = new CSUserInfo(fullName, emailAddress, smsNumber, vehicleMake, vehicleModel, vehicleLicensePlate);
 
                 CSUserSession.getInstance().setUserInfo(userInfo);
                 callbackContext.success();
