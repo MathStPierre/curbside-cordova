@@ -8,7 +8,7 @@
     <repo>https://github.com/curbside/curbside-cordova.git</repo>
     <issue>https://github.com/curbside/curbside-cordova.git/issues</issue>
     <engines>
-        <engine name="cordova-ios" version=">=4.3.0" />
+        <engine name="cordova-ios" version=">=4.1.1" />
     </engines>
     <dependency id="cordova-promise-polyfill"></dependency>
     <!-- android -->
