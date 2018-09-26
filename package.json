@@ -1,9 +1,12 @@
 {
     "name": "curbside-cordova",
-    "version": "3.2.1",
+    "version": "3.2.4",
     "cordova": {
         "id": "curbside-cordova",
-        "platforms": ["android", "ios"]
+        "platforms": [
+            "android",
+            "ios"
+        ]
     },
     "scripts": {},
     "description": "Curbside Cordova Plugin",

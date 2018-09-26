@@ -78,6 +78,10 @@ var Curbside = {
         return execCb("getTrackedSites", cb);
     },
 
+    getEtaToSiteWithIdentifier: function(siteId, location, transportationMode, cb) {
+        return execCb("getEtaToSiteWithIdentifier", cb, siteId, location, transportationMode);
+    },
+
     on: function(event, listener) {
         initEventListener();
         if (!(event in eventListeners)) {
