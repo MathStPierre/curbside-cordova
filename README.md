@@ -355,7 +355,7 @@ document.addEventListener("deviceready", function() {
    * This method will calculate the estimated time in second of arrival to a site.
    * Negative value means ETA is unknown.
    */
-  Curbside.getUserInfo("SITE_ID", {
+  Curbside.getEtaToSiteWithIdentifier("SITE_ID", {
       latitude,
       longitude,
       altitude,
@@ -382,6 +382,7 @@ All functions return a Promise as an alternative to a callback.
 -   cancelTripToSiteWithIdentifier
 -   getTrackingIdentifier
 -   getTrackedSites
+-   getEtaToSiteWithIdentifier
 
 The Promise can be used like this:
 
