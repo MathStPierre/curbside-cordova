@@ -207,11 +207,14 @@
     
 - (CSSession*)getSession {
     CSMonitoringSession* monitoringSession = [CSMonitoringSession currentSession];
-    if(monitoringSession != nil){
-        return monitoringSession;
-    }
     CSUserSession* userSession = [CSUserSession currentSession];
-    return userSession;
+    if (monitoringSession.sessionState == CSSessionStateValid || monitoringSession.sessionState == CSSessionStateAuthenticated) {
+        return monitoringSession;    
+    }
+    if (userSession.sessionState == CSSessionStateValid || userSession.sessionState == CSSessionStateAuthenticated) {
+        return userSession;    
+    }
+    return nil;
 }
     
 - (void)setTrackingIdentifier:(CDVInvokedUrlCommand*)command {
