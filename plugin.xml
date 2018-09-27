@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin 
-    xmlns="http://apache.org/cordova/ns/plugins/1.0" id="curbside-cordova" version="3.2.0">
+    xmlns="http://apache.org/cordova/ns/plugins/1.0" id="curbside-cordova" version="3.2.2">
     <name>Cordova Plugin Template</name>
     <description></description>
     <license>MIT</license>
@@ -30,7 +30,7 @@
             </feature>
         </config-file>
         <source-file src="src/android/com/curbside/CurbsideCordovaPlugin.java" target-dir="src/com/curbside/" />
-        <framework src='com.curbside:sdk:3.2+'  />
+        <framework src='com.curbside:sdk:3.2.4'  />
         <framework src='joda-time:joda-time:2.4'  />
     </platform>
     <!-- ios -->
@@ -57,6 +57,6 @@
         </config-file>
         <header-file src="src/ios/CurbsideCordovaPlugin.h" />
         <source-file src="src/ios/CurbsideCordovaPlugin.m" />
-        <framework src="Curbside" type="podspec" spec="~> 3.23" />
+        <framework src="Curbside" type="podspec" spec="~> 3.27" />
     </platform>
 </plugin>

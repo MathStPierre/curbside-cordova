@@ -1,4 +1,4 @@
-# Curbside Cordova plugin for iOS and Android (version 3.2.1)
+# Curbside Cordova plugin for iOS and Android (version 3.2.2)
 
 This plugin is a wrapper for [Curbside SDK](https://developer.curbside.com/docs/).
 
@@ -22,13 +22,13 @@ cordova plugin add https://github.com/Curbside/curbside-cordova.git
 
 In `platforms/ios/YOUR_PROJECT/Classes/AppDelegate.m`
 
-* Add on top
+-   Add on top
 
 ```objc
 @import Curbside;
 ```
 
-* At the end of `-(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions` add this:
+-   At the end of `-(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions` add this:
 
 ```objc
   CSUserSession *sdksession = [CSUserSession createSessionWithUsageToken:@"USAGE_TOKEN" delegate:nil];
@@ -84,7 +84,7 @@ In your project, edit the file `platforms/android/build.gradle`.
 
 Replace
 
-```yaml
+```java
 allprojects {
     repositories {
         jcenter()
@@ -97,7 +97,7 @@ allprojects {
 
 by:
 
-```yaml
+```java
 allprojects {
     repositories {
         jcenter()
@@ -118,6 +118,55 @@ Otherwise, you will experience the following error:
        Required by:
            project :
 ```
+
+#### Add Firebase in your app
+
+1. Go to <a href="https://console.firebase.google.com/u/0/">Firebase Console</a> and click **Add project**.
+
+![Image of Firebase Console](./Firebase_Console.png)
+
+2. Following pop up window will open. Click on the drop down marker in front of Project Name. Select the project from the list of existing Google Projects and then click “Add Firebase”.
+
+![Image of Add Project](./Add_Project.png)
+
+3. Click **Add Firebase to your Android app** and follow the setup steps.
+4. When prompted, enter your app's package name. Package name can only be set when you add an app to your Firebase project.
+5. At the end, you'll download a google-services.json file. You can download this file again at any time.
+6. Copy google-services.json file into your project's module folder, typically app.
+
+#### Add the Firebase SDK in your app
+
+1. First, add rules to your root-level `/platforms/android/build.gradle` file, to include the google-services plugin and the Google's Maven repository:
+
+```java
+buildscript {
+    // ...
+    dependencies {
+        // ...
+        classpath 'com.google.gms:google-services:3.0.0' // google-services plugin
+    }
+}
+
+allprojects {
+    // ...
+    repositories {
+        // ...
+        maven {
+            url "https://maven.google.com" // Google's Maven repository
+        }
+    }
+}
+```
+
+2. Then, in your module Gradle file `/platforms/android/app/build.gradle`, add at the bottom of the file to enable the Gradle plugin:
+
+```java
+apply plugin: 'com.google.gms.google-services'
+```
+
+3. **Make sure** that all the google dependencies are of the same version. Otherwise, app may throw errors/exceptions when running/syncing the project.
+
+#### Setup your MainActivity
 
 In `platforms/android/src/main/java/com/YOUR_PROJECT/MainActivity.java` add your usage token and permission notification:
 
@@ -142,10 +191,11 @@ In `platforms/android/src/main/java/com/YOUR_PROJECT/MainActivity.java` add your
 
 You can also configure the following variables to customize the iOS location plist entries
 
-* `LOCATION_WHEN_IN_USE_DESCRIPTION` for `NSLocationWhenInUseUsageDescription` (defaults to "To get accurate GPS
-  locations")
-* `LOCATION_ALWAYS_USAGE_DESCRIPTION` for `NSLocationAlwaysUsageDescription` (defaults to "To get accurate GPS
-  locations")
+-   `LOCATION_WHEN_IN_USE_DESCRIPTION` for `NSLocationWhenInUseUsageDescription` (defaults to "To get accurate GPS
+    locations")
+
+*   `LOCATION_ALWAYS_USAGE_DESCRIPTION` for `NSLocationAlwaysUsageDescription` (defaults to "To get accurate GPS
+    locations")
 
 Example using the Cordova CLI
 
@@ -300,6 +350,22 @@ document.addEventListener("deviceready", function() {
   Curbside.getUserInfo(function(error, userInfo){
 
   });
+
+  /**
+   * This method will calculate the estimated time in second of arrival to a site.
+   * Negative value means ETA is unknown.
+   */
+  Curbside.getEtaToSiteWithIdentifier("SITE_ID", {
+      latitude,
+      longitude,
+      altitude,
+      speed,
+      course,
+      verticalAccuracy,
+      horizontalAccuracy
+    }, "driving", function(error, eta){
+
+  });
 });
 </script>
 ```
@@ -308,14 +374,15 @@ document.addEventListener("deviceready", function() {
 
 All functions return a Promise as an alternative to a callback.
 
-* setTrackingIdentifier
-* startTripToSiteWithIdentifier
-* startTripToSiteWithIdentifierAndEta
-* completeTripToSiteWithIdentifier
-* completeAllTrips
-* cancelTripToSiteWithIdentifier
-* getTrackingIdentifier
-* getTrackedSites
+-   setTrackingIdentifier
+-   startTripToSiteWithIdentifier
+-   startTripToSiteWithIdentifierAndEta
+-   completeTripToSiteWithIdentifier
+-   completeAllTrips
+-   cancelTripToSiteWithIdentifier
+-   getTrackingIdentifier
+-   getTrackedSites
+-   getEtaToSiteWithIdentifier
 
 The Promise can be used like this:
 

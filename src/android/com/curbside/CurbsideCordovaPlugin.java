@@ -2,8 +2,11 @@
  */
 package com.curbside;
 
+import android.location.Location;
 
+import com.curbside.sdk.CSSession;
 import com.curbside.sdk.CSSite;
+import com.curbside.sdk.CSTransportationMode;
 import com.curbside.sdk.CSTripInfo;
 import com.curbside.sdk.CSUserSession;
 import com.curbside.sdk.CSUserStatus;
@@ -38,22 +41,18 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
     public void initialize(final CordovaInterface cordova, final CordovaWebView webView) {
         super.initialize(cordova, webView);
 
-        final CurbsideCordovaPlugin ccPlugin = this;
-
-
-        CSUserSession instance = CSUserSession.getInstance();
-        if (instance == null) {
-            throw new Error("CSUserSession must be initialized init");
+        CSUserSession userSession = CSUserSession.getInstance();
+        if (userSession != null) {
+            subscribe(userSession, Type.CAN_NOTIFY_MONITORING_USER_AT_SITE, "canNotifyMonitoringSessionUserAtSite");
+            subscribe(userSession, Type.APPROACHING_SITE, "userApproachingSite");
+            subscribe(userSession, Type.ARRIVED_AT_SITE, "userArrivedAtSite");
+            subscribe(userSession, Type.UPDATED_TRACKED_SITES, "updatedTrackedSites");
         }
 
-        subscribe(Type.CAN_NOTIFY_MONITORING_USER_AT_SITE, "canNotifyMonitoringSessionUserAtSite");
-        subscribe(Type.APPROACHING_SITE, "userApproachingSite");
-        subscribe(Type.ARRIVED_AT_SITE, "userArrivedAtSite");
-        subscribe(Type.UPDATED_TRACKED_SITES, "updatedTrackedSites");
     }
 
     private String getStringArg(JSONArray args, int i) {
-        String value = null;
+        String value;
         try {
             value = args.getString(i);
             if (value.equals("null")) {
@@ -63,6 +62,42 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
             return null;
         }
         return value;
+    }
+
+
+    private Location getLocationArg(JSONArray args, int i) {
+        Location location;
+        try {
+            JSONObject jsonValue = args.getJSONObject(i);
+            if (jsonValue.equals("null")) {
+                return null;
+            }
+            location = new Location("JsonProvider");
+            if (jsonValue.has("altitude")) {
+                location.setAltitude(jsonValue.getDouble("altitude"));
+            }
+            if (jsonValue.has("horizontalAccuracy")) {
+                location.setAccuracy((float) jsonValue.getDouble("horizontalAccuracy"));
+            }
+            if (jsonValue.has("speed")) {
+                location.setSpeed((float) jsonValue.getDouble("speed"));
+            }
+            if (jsonValue.has("course")) {
+                location.setBearing((float) jsonValue.getDouble("course"));
+            }
+            if (jsonValue.has("timestamp")) {
+                location.setTime(jsonValue.getLong("timestamp"));
+            }
+            if (jsonValue.has("latitude")) {
+                location.setLatitude(jsonValue.getDouble("latitude"));
+            }
+            if (jsonValue.has("longitude")) {
+                location.setLongitude(jsonValue.getDouble("longitude"));
+            }
+        } catch (JSONException e) {
+            return null;
+        }
+        return location;
     }
 
     private Object jsonEncode(Object object) throws JSONException {
@@ -112,11 +147,11 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
             result.put("vehicleModel", userInfo.getVehicleModel());
             result.put("vehicleLicensePlate", userInfo.getVehicleLicensePlate());
             return result;
-        } else
-            return object;
+        }
+        return object;
     }
 
-    private void subscribe(Type type, final String eventName) {
+    private void subscribe(final CSSession session, Type type, final String eventName) {
         final CurbsideCordovaPlugin ccPlugin = this;
         Subscriber<Event> subscriber = new Subscriber<Event>() {
             @Override
@@ -136,7 +171,9 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                     if (event.object != null) {
                         result.put("result", jsonEncode(event.object));
                     }
-                    PluginResult dataResult = new PluginResult(event.status == Status.SUCCESS ? PluginResult.Status.OK : PluginResult.Status.ERROR, result);
+                    PluginResult dataResult = new PluginResult(
+                            event.status == Status.SUCCESS ? PluginResult.Status.OK : PluginResult.Status.ERROR,
+                            result);
                     dataResult.setKeepCallback(true);
                     if (ccPlugin.eventListenerCallbackContext != null) {
                         ccPlugin.eventListenerCallbackContext.sendPluginResult(dataResult);
@@ -148,50 +185,81 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                 }
             }
         };
-        listenEvent(type, subscriber);
+        listenEvent(session, type, subscriber);
     }
 
-    private void listenNextEvent(final Type type, final CallbackContext callbackContext) {
-        Subscriber<Event> subscriber = new Subscriber<Event>() {
-            @Override
-            public final void onCompleted() {
+    private void listenNextEvent(final CSSession session, final Type type, final CallbackContext callbackContext) {
+        if (session == null) {
+            switch (type) {
+                case REGISTER_TRACKING_ID:
+                case UNREGISTER_TRACKING_ID:
+                    callbackContext.error("CSSession must be initialized");
+                    break;
+                case START_TRIP:
+                case COMPLETE_TRIP:
+                case COMPLETE_ALL_TRIPS:
+                case CANCEL_TRIP:
+                case CANCEL_ALL_TRIPS:
+                case SEND:
+                case FETCH_LOCATION_UPDATE:
+                case ACK_LOCATION_UPDATE:
+                case START_MOCK_TRIP:
+                case CANCEL_MOCK_TRIP:
+                case CAN_NOTIFY_MONITORING_USER_AT_SITE:
+                case APPROACHING_SITE:
+                case ARRIVED_AT_SITE:
+                case UPDATED_TRACKED_SITES:
+                case UPDATE_TRIP:
+                case ETA_FROM_SITE:
+                    callbackContext.error("CSUserSession must be initialized");
+                    break;
+                case START_MONITORING_ARRIVALS:
+                case STOP_MONITORING_ARRIVALS:
+                case NOTIFY_MONITORING_SESSION_USER:
+                case COMPLETE_TRIP_FOR_TRACKING_IDENTIFIER:
+                case CANCEL_TRIP_FOR_TRACKING_IDENTIFIER:
+                    callbackContext.error("CSMonitoringSession must be initialized");
+                    break;
             }
-
-            @Override
-            public final void onError(Throwable e) {
-                throw new OnErrorNotImplementedException(e);
-            }
-
-            @Override
-            public final void onNext(Event event) {
-                Object result = event.object;
-                if (event.status == Status.SUCCESS) {
-                    if (result instanceof JSONObject) {
-                        callbackContext.success((JSONObject) result);
-                    } else if (result instanceof JSONArray) {
-                        callbackContext.success((JSONArray) result);
-                    } else if (result instanceof String) {
-                        callbackContext.success((String) result);
-                    } else {
-                        callbackContext.success();
-                    }
-                } else {
-                    callbackContext.error(event.object.toString());
+        } else {
+            Subscriber<Event> subscriber = new Subscriber<Event>() {
+                @Override
+                public final void onCompleted() {
                 }
-                unsubscribe();
-            }
-        };
-        listenEvent(type, subscriber);
+
+                @Override
+                public final void onError(Throwable e) {
+                    throw new OnErrorNotImplementedException(e);
+                }
+
+                @Override
+                public final void onNext(Event event) {
+                    Object result = event.object;
+                    if (event.status == Status.SUCCESS) {
+                        if (result instanceof JSONObject) {
+                            callbackContext.success((JSONObject) result);
+                        } else if (result instanceof JSONArray) {
+                            callbackContext.success((JSONArray) result);
+                        } else if (result instanceof String) {
+                            callbackContext.success((String) result);
+                        } else if (result instanceof Integer) {
+                            callbackContext.success((Integer) result);
+                        } else {
+                            callbackContext.success();
+                        }
+                    } else {
+                        callbackContext.error(event.object.toString());
+                    }
+                    unsubscribe();
+                }
+            };
+            listenEvent(session, type, subscriber);
+        }
     }
 
-    private void listenEvent(final Type type, final Subscriber<Event> subscriber) {
-        CSUserSession
-                .getInstance()
-                .getEventBus()
-                .getObservable(Path.USER, type)
-                .subscribe(subscriber);
+    private void listenEvent(final CSSession session, final Type type, final Subscriber<Event> subscriber) {
+        session.getEventBus().getObservable(Path.USER, type).subscribe(subscriber);
     }
-
 
     public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
         if (action.equals("eventListener")) {
@@ -202,68 +270,89 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
             pluginResults.clear();
         } else {
             if (action.equals("setTrackingIdentifier")) {
+                CSUserSession userSession = CSUserSession.getInstance();
                 String trackingIdentifier = this.getStringArg(args, 0);
                 if (trackingIdentifier != null) {
-                    listenNextEvent(Type.REGISTER_TRACKING_ID, callbackContext);
+                    listenNextEvent(userSession, Type.REGISTER_TRACKING_ID, callbackContext);
                     CSUserSession.getInstance().registerTrackingIdentifier(trackingIdentifier);
                 } else {
-                    listenNextEvent(Type.UNREGISTER_TRACKING_ID, callbackContext);
+                    listenNextEvent(userSession, Type.UNREGISTER_TRACKING_ID, callbackContext);
                     CSUserSession.getInstance().unregisterTrackingIdentifier();
                 }
             } else if (action.equals("startTripToSiteWithIdentifier")) {
+                CSUserSession userSession = CSUserSession.getInstance();
                 String siteID = this.getStringArg(args, 0);
                 String trackToken = this.getStringArg(args, 1);
-                listenNextEvent(Type.START_TRIP, callbackContext);
-                CSUserSession.getInstance().startTripToSiteWithIdentifier(siteID, trackToken);
+                listenNextEvent(userSession, Type.START_TRIP, callbackContext);
+                userSession.startTripToSiteWithIdentifier(siteID, trackToken);
             } else if (action.equals("startTripToSiteWithIdentifierAndEta")) {
+                CSUserSession userSession = CSUserSession.getInstance();
                 String siteID = this.getStringArg(args, 0);
                 String trackToken = this.getStringArg(args, 1);
                 String from = this.getStringArg(args, 2);
                 String to = this.getStringArg(args, 3);
-                listenNextEvent(Type.START_TRIP, callbackContext);
-                DateTime dtFrom = null;
-                DateTime dtTo = null;
-                try {
-                    dtFrom = DateTime.parse(from);
-                    dtTo = to == null ? null : DateTime.parse(to);
-                } catch (Exception e) {
-
-                }
-                CSUserSession.getInstance().startTripToSiteWithIdentifierAndETA(siteID, trackToken, dtFrom, dtTo);
+                listenNextEvent(userSession, Type.START_TRIP, callbackContext);
+                DateTime dtFrom = DateTime.parse(from);
+                DateTime dtTo = to == null ? null : DateTime.parse(to);
+                userSession.startTripToSiteWithIdentifierAndETA(siteID, trackToken, dtFrom, dtTo);
             } else if (action.equals("completeTripToSiteWithIdentifier")) {
+                CSUserSession userSession = CSUserSession.getInstance();
                 String siteID = this.getStringArg(args, 0);
                 String trackToken = this.getStringArg(args, 1);
-                listenNextEvent(Type.COMPLETE_TRIP, callbackContext);
-                CSUserSession.getInstance().completeTripToSiteWithIdentifier(siteID, trackToken);
+                listenNextEvent(userSession, Type.COMPLETE_TRIP, callbackContext);
+                userSession.completeTripToSiteWithIdentifier(siteID, trackToken);
             } else if (action.equals("completeAllTrips")) {
-                CSUserSession.getInstance().completeAllTrips();
-                listenNextEvent(Type.COMPLETE_ALL_TRIPS, callbackContext);
+                CSUserSession userSession = CSUserSession.getInstance();
+                listenNextEvent(userSession, Type.COMPLETE_ALL_TRIPS, callbackContext);
+                userSession.completeAllTrips();
             } else if (action.equals("cancelTripToSiteWithIdentifier")) {
+                CSUserSession userSession = CSUserSession.getInstance();
                 String siteID = this.getStringArg(args, 0);
                 String trackToken = this.getStringArg(args, 1);
-                listenNextEvent(Type.CANCEL_TRIP, callbackContext);
-                CSUserSession.getInstance().cancelTripToSiteWithIdentifier(siteID, trackToken);
+                listenNextEvent(userSession, Type.CANCEL_TRIP, callbackContext);
+                userSession.cancelTripToSiteWithIdentifier(siteID, trackToken);
             } else if (action.equals("cancelAllTrips")) {
-                CSUserSession.getInstance().cancelAllTrips();
-                listenNextEvent(Type.CANCEL_ALL_TRIPS, callbackContext);
+                CSUserSession userSession = CSUserSession.getInstance();
+                listenNextEvent(userSession, Type.CANCEL_ALL_TRIPS, callbackContext);
+                userSession.cancelAllTrips();
             } else if (action.equals("getTrackingIdentifier")) {
-                callbackContext.success(CSUserSession.getInstance().getTrackingIdentifier());
+                CSUserSession userSession = CSUserSession.getInstance(); 
+                callbackContext.success(userSession.getTrackingIdentifier());
             } else if (action.equals("getTrackedSites")) {
-                callbackContext.success((JSONObject) jsonEncode(CSUserSession.getInstance().getTrackedSites()));
+                Object trackedSites = CSUserSession.getInstance().getTrackedSites();
+                if (trackedSites != null) {
+                    callbackContext.success((JSONObject) jsonEncode(trackedSites));
+                } else {
+                    callbackContext.success(new JSONArray());
+                }
             } else if (action.equals("setUserInfo")) {
                 JSONObject userInfoData = args.getJSONObject(0);
                 String fullName = userInfoData.has("fullName") ? userInfoData.getString("fullName") : null;
                 String emailAddress = userInfoData.has("emailAddress") ? userInfoData.getString("emailAddress") : null;
                 String smsNumber = userInfoData.has("smsNumber") ? userInfoData.getString("smsNumber") : null;
-
                 String vehicleMake = userInfoData.has("vehicleMake") ? userInfoData.getString("vehicleMake") : null;
                 String vehicleModel = userInfoData.has("vehicleModel") ? userInfoData.getString("vehicleModel") : null;
-                String vehicleLicensePlate = userInfoData.has("vehicleLicensePlate") ? userInfoData.getString("vehicleLicensePlate") : null;
+                String vehicleLicensePlate = userInfoData.has("vehicleLicensePlate")
+                        ? userInfoData.getString("vehicleLicensePlate")
+                        : null;
 
-                CSUserInfo userInfo = new CSUserInfo(fullName, emailAddress, smsNumber, vehicleMake, vehicleModel, vehicleLicensePlate);
-
+                CSUserInfo userInfo = new CSUserInfo(fullName, emailAddress, smsNumber, vehicleMake, vehicleModel,
+                        vehicleLicensePlate);
                 CSUserSession.getInstance().setUserInfo(userInfo);
                 callbackContext.success();
+            } else if (action.equals("getEtaToSiteWithIdentifier")) {
+                String siteID = this.getStringArg(args, 0);
+                Location location = this.getLocationArg(args, 1);
+                String transportationModeString = this.getStringArg(args, 2);
+                CSTransportationMode transportationMode;
+                if ("walking".equals(transportationModeString)) {
+                    transportationMode = CSTransportationMode.WALKING;
+                } else {
+                    transportationMode = CSTransportationMode.DRIVING;
+                }
+                CSUserSession userSession = CSUserSession.getInstance();
+                listenNextEvent(userSession, Type.ETA_FROM_SITE, callbackContext);
+                userSession.getEtaToSiteWithIdentifier(siteID, location, transportationMode);
             } else {
                 callbackContext.error("invalid action:" + action);
             }
