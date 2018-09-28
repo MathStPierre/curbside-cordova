@@ -15,6 +15,8 @@
 
 @implementation CurbsideCordovaPlugin
 
+BOOL userSessionInitializationErrorSkipped = false;
+
 - (NSString*)getStringArg: (NSArray*)arguments at:(int)index{
     id obj = [arguments objectAtIndex:index];
     if(!obj || obj == [NSNull null]){
@@ -357,8 +359,10 @@
     CSSessionState monitoringSessionState = [CSMonitoringSession currentSession].sessionState;
     BOOL hasValidMonitoringSession = (monitoringSessionState == CSSessionStateValid || monitoringSessionState == CSSessionStateAuthenticated);
     // Only notify CSErrorCodeUsageTokenNotSet if there is no valid monitoring session
-    if(error.code != CSErrorCodeUsageTokenNotSet || !hasValidMonitoringSession){
+    if(userSessionInitializationErrorSkipped || error.code != CSErrorCodeUsageTokenNotSet || !hasValidMonitoringSession){
         [self sendErrorEvent:[error localizedDescription]];
+    } else {
+        userSessionInitializationErrorSkipped = true;
     }
 }
     
