@@ -1,4 +1,4 @@
-# Curbside Cordova plugin for iOS and Android (version 3.2.2)
+# Curbside Cordova plugin for iOS and Android (version 3.2.3)
 
 This plugin is a wrapper for [Curbside SDK](https://developer.curbside.com/docs/).
 
@@ -28,11 +28,22 @@ In `platforms/ios/YOUR_PROJECT/Classes/AppDelegate.m`
 @import Curbside;
 ```
 
+#### User Session
+
 -   At the end of `-(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions` add this:
 
 ```objc
   CSUserSession *sdksession = [CSUserSession createSessionWithUsageToken:@"USAGE_TOKEN" delegate:nil];
   [sdksession application:application didFinishLaunchingWithOptions:launchOptions];
+```
+
+#### Monitoring Session
+
+If your app does not already request location, In `platforms/ios/YOUR_PROJECT/Classes/AppDelegate.m` in `-(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions` add this:
+
+```objc
+    CSMonitoringSession *sdksession = [CSMonitoringSession createSessionWithAPIKey:@"APIKey" secret:@"secret" delegate:nil];
+    [sdksession application:application didFinishLaunchingWithOptions:launchOptions];
 ```
 
 Enable Background Modes
@@ -187,14 +198,34 @@ In `platforms/android/src/main/java/com/YOUR_PROJECT/MainActivity.java` add your
         ...
 ```
 
+or if you whant to have the monitoring session
+
+```java
+    private static String API_KEY = "API_KEY";
+    private static String SECRET = "SECRET";
+    private static final int PERMISSION_REQUEST_CODE = 1;
+
+    @Override
+    public void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        CSMonitoringSession.init(this, new BasicAuthCurbsideCredentialProvider(API_KEY, SECRET));
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            String[] permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
+            ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE);
+        }
+        ...
+```
+
 ## Configuration
 
 You can also configure the following variables to customize the iOS location plist entries
 
 -   `LOCATION_WHEN_IN_USE_DESCRIPTION` for `NSLocationWhenInUseUsageDescription` (defaults to "To get accurate GPS
     locations")
-
-*   `LOCATION_ALWAYS_USAGE_DESCRIPTION` for `NSLocationAlwaysUsageDescription` (defaults to "To get accurate GPS
+-   `LOCATION_ALWAYS_USAGE_DESCRIPTION` for `NSLocationAlwaysUsageDescription` (defaults to "To get accurate GPS
     locations")
 
 Example using the Cordova CLI
@@ -215,6 +246,8 @@ Example using config.xml
 ```
 
 ## Quick Start
+
+### For User Session
 
 ```html
 <script type="text/javascript">
@@ -326,7 +359,7 @@ document.addEventListener("deviceready", function() {
   /**
    * Returns the "USER_UNIQUE_TRACKING_ID" of the currently tracked user.
    **/
-  Curbside.getTrackingIdentifier(function(error, sites){
+  Curbside.getTrackingIdentifier(function(error, trackingIdentifier){
 
   });
 
@@ -345,13 +378,6 @@ document.addEventListener("deviceready", function() {
   });
 
   /**
-   * Returns the userInfo e.g. full name, email and sms number
-   */
-  Curbside.getUserInfo(function(error, userInfo){
-
-  });
-
-  /**
    * This method will calculate the estimated time in second of arrival to a site.
    * Negative value means ETA is unknown.
    */
@@ -364,6 +390,73 @@ document.addEventListener("deviceready", function() {
       verticalAccuracy,
       horizontalAccuracy
     }, "driving", function(error, eta){
+});
+</script>
+```
+
+### For Monitoring Session
+
+```html
+<script type="text/javascript">
+document.addEventListener("deviceready", function() {
+   /**
+   * Will be triggered when user status updates are sent to the consuming application.
+   **/
+  Curbside.on("userStatusUpdates", function(UserStatusUpdates){
+    // Do something
+  });
+
+  /**
+   * Set the "USER_UNIQUE_TRACKING_ID" of the user currently logged in your app. This may be nil when the app is
+   * started, but as the user logs into the app, make sure this value is set. trackingIdentifier needs to be set to use
+   * session specific methods for starting trips or monitoring sites. This identifier will be persisted across
+   * application restarts.
+   *
+   * When the user logs out, set this to nil, which will in turn end the user session or monitoring session.
+   * Note: The maximum length of the trackingIdentifier is 36 characters.
+   **/
+  Curbside.setTrackingIdentifier("USER_UNIQUE_TRACKING_ID", function(error){
+
+  });
+
+  /**
+   * Returns the "USER_UNIQUE_TRACKING_ID" of the currently tracked user.
+   **/
+  Curbside.getTrackingIdentifier(function(error, trackingIdentifier){
+
+  });
+
+  /**
+   * Completes the trip(s) identified by the trackToken(s) and trackIdentifier to this site.
+   * Call this method when the trip(s) for the given trackToken(s) is/are completed by the user.
+   * If the trackTokens is nil, then all trips to this site for the user will be marked complete.
+   **/
+  Curbside.completeTripForTrackingIdentifier("USER_UNIQUE_TRACKING_ID", ["UNIQUE_TRACK_TOKEN_1", "UNIQUE_TRACK_TOKEN_2"], function(error){
+
+  });
+
+  /**
+   * Cancels the trip(s) identified by the trackToken(s) and trackIdentifier to this site.
+   * Call this method when the trip(s) for the given trackToken(s) is/are cancelled by the user.
+   * If the trackTokens is nil, then all trips to this site for the user will be canceled.
+   **/
+  Curbside.cancelTripForTrackingIdentifier("USER_UNIQUE_TRACKING_ID", ["UNIQUE_TRACK_TOKEN_1", "UNIQUE_TRACK_TOKEN_2"], function(error){
+
+  });
+
+  /**
+   * This subscribes to user arrival and status updates to the site defined by arrivalSite.
+   * If an error occurs because of an invalid session state, permissions or authentication with the ARRIVE server,
+   * Will trigger userStatusUpdates
+   **/
+  Curbside.startMonitoringArrivalsToSiteWithIdentifier("SITE_ID", function(error){
+
+  });
+
+  /**
+   * This unsubscribes to user status updates.
+   **/
+  Curbside.stopMonitoringArrivals(function(error){
 
   });
 });
