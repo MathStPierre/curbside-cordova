@@ -57,6 +57,6 @@
         </config-file>
         <header-file src="src/ios/CurbsideCordovaPlugin.h" />
         <source-file src="src/ios/CurbsideCordovaPlugin.m" />
-        <framework src="Curbside" type="podspec" spec="~> 3.27" />
+        <framework src="Curbside" type="podspec" spec="~> 3.5.1" />
     </platform>
 </plugin>
