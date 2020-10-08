@@ -20,6 +20,23 @@ cordova plugin add https://github.com/Curbside/curbside-cordova.git
 
 ### iOS
 
+Enable Background Modes
+
+1. From the Project Navigator, select your project.
+2. Select your target.
+3. Select Capabilities.
+4. Scroll down to Background Modes.
+5. Check Location updates and Background fetch.
+
+![Image of background modes](./backgroundModes.png)
+
+Otherwise you will get
+
+```
+*** Assertion failure in -[CLLocationManager setAllowsBackgroundLocationUpdates:]
+*** Terminating app due to uncaught exception 'NSInternalInconsistencyException', reason: 'Invalid parameter not satisfying: !stayUp || CLClientIsBackgroundable(internal->fClient)'
+```
+
 In `platforms/ios/YOUR_PROJECT/Classes/AppDelegate.m`
 
 -   Add on top
@@ -46,22 +63,7 @@ If your app does not already request location, In `platforms/ios/YOUR_PROJECT/Cl
     [sdksession application:application didFinishLaunchingWithOptions:launchOptions];
 ```
 
-Enable Background Modes
 
-1. From the Project Navigator, select your project.
-2. Select your target.
-3. Select Capabilities.
-4. Scroll down to Background Modes.
-5. Check Location updates and Background fetch.
-
-![Image of background modes](./backgroundModes.png)
-
-Otherwise you will get
-
-```
-*** Assertion failure in -[CLLocationManager setAllowsBackgroundLocationUpdates:]
-*** Terminating app due to uncaught exception 'NSInternalInconsistencyException', reason: 'Invalid parameter not satisfying: !stayUp || CLClientIsBackgroundable(internal->fClient)'
-```
 
 #### Fixing the Podfile iOS version
 
