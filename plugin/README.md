@@ -64,32 +64,6 @@ If your app does not already request location, In `platforms/ios/YOUR_PROJECT/Cl
     [monitoringSession application:application didFinishLaunchingWithOptions:launchOptions];
 ```
 
-
-
-#### Fixing the Podfile iOS version
-
-> We're currently awaiting for one of our fixes to be merged in the Cordova core. Until this is available, this step is needed.
-
-If you are experiencing this error:
-
-```
-Installing "curbside-cordova" for ios
-Failed to install 'curbside-cordova': Error: pod: Command failed with exit code 1
-    at ChildProcess.whenDone (/path/to/your/project/platforms/ios/cordova/node_modules/cordova-common/src/superspawn.js:169:23)
-    at emitTwo (events.js:125:13)
-    at ChildProcess.emit (events.js:213:7)
-    at maybeClose (internal/child_process.js:887:16)
-    at Process.ChildProcess._handle.onexit (internal/child_process.js:208:5)
-Error: pod: Command failed with exit code 1
-```
-
-In your project, edit the file `platforms/ios/Podfile`. Replace `platform :ios, '8.0'` by `platform :ios,'9.0'` Then in
-a terminal go to `platforms/ios` and execute
-
-```bash
-pod install
-```
-
 ### Android
 
 Add the Curbside SDK maven url
