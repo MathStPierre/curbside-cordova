@@ -24,9 +24,10 @@ Enable Background Modes
 
 1. From the Project Navigator, select your project.
 2. Select your target.
-3. Select Capabilities.
-4. Scroll down to Background Modes.
-5. Check Location updates and Background fetch.
+3. Select Signing and Capabilities.
+4. Scroll down to capabitilies section and search for Background Modes capability.
+5. If Background Modes capability is not found just add it by clicking + button at the top left.
+6. Check Location updates and Background fetch.
 
 ![Image of background modes](./backgroundModes.png)
 
