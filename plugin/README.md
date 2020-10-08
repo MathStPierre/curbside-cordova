@@ -51,8 +51,8 @@ In `platforms/ios/YOUR_PROJECT/Classes/AppDelegate.m`
 -   At the end of `-(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions` add this:
 
 ```objc
-  CSUserSession *sdksession = [CSUserSession createSessionWithUsageToken:@"USAGE_TOKEN" delegate:nil];
-  [sdksession application:application didFinishLaunchingWithOptions:launchOptions];
+  CSUserSession *userSession = [CSUserSession createSessionWithUsageToken:@"USAGE_TOKEN" delegate:nil];
+  [userSession application:application didFinishLaunchingWithOptions:launchOptions];
 ```
 
 #### Monitoring Session
@@ -60,8 +60,8 @@ In `platforms/ios/YOUR_PROJECT/Classes/AppDelegate.m`
 If your app does not already request location, In `platforms/ios/YOUR_PROJECT/Classes/AppDelegate.m` in `-(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions` add this:
 
 ```objc
-    CSMonitoringSession *sdksession = [CSMonitoringSession createSessionWithAPIKey:@"APIKey" secret:@"secret" delegate:nil];
-    [sdksession application:application didFinishLaunchingWithOptions:launchOptions];
+    CSMonitoringSession *monitoringSession = [CSMonitoringSession createSessionWithAPIKey:@"APIKey" secret:@"secret" delegate:nil];
+    [monitoringSession application:application didFinishLaunchingWithOptions:launchOptions];
 ```
 
 
