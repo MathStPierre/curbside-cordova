@@ -1,0 +1,16 @@
+{
+  "name": "curbside-cordova-tests",
+  "version": "2.0.4-dev",
+  "description": "",
+  "cordova": {
+    "id": "curbside-cordova-tests",
+    "platforms": 
+    [ "android",
+      "ios"]
+  },
+  "keywords": [
+    "ecosystem:cordova"
+  ],
+  "author": "",
+  "license": "Apache 2.0"
+}
