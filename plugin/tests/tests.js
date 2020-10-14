@@ -1,5 +1,4 @@
-/*
-    *
+   /*    
     * Licensed to the Apache Software Foundation (ASF) under one
     * or more contributor license agreements.  See the NOTICE file
     * distributed with this work for additional information
@@ -18,11 +17,15 @@
     * under the License.
     *
     */
+   
+       let errorFromErrorEvenHandler = null
+   
        let errorEventHandler = function(error){
-           expect(error).toBeNull();
+           errorFromErrorEvenHandler = error
        };
    
-       let destinationSiteId = 'piecompany_118604'
+       let destinationSiteId = 'rakutenreadydemo_100'
+       let trackingId = 'CurbsideCordovaTestsPlugin'
    
        exports.defineAutoTests = function () {
            describe('Curbside', function () {
@@ -31,20 +34,28 @@
                    expect(window.Curbside).toBeDefined();
                });
    
-               it('setup event listeners', function () {
+               it('register event listeners2', function () {
                    window.Curbside.on("encounteredError", errorEventHandler);
+                       
+                   //Avoid no expectation warning
                    expect(null).toBeNull();
                });
-   
+                                   
                it('setTrackingIdentifier', function () {
-                   window.Curbside.setTrackingIdentifier("CORDOVA_PLUGIN_TEST_TRACKING_ID", function (error) {
-                       expect(error).toBeNull();
-                   });
    
-                   window.Curbside.getTrackingIdentifier(function (error, trackingIdentifier) {
-                       expect(error).toBeNull();
-                       expect(trackingIdentifier).toBe("CORDOVA_PLUGIN_TEST_TRACKING_ID");
-                   });
+                   window.Curbside.setTrackingIdentifier(trackingId)
+                       .then(function() {})
+                       .catch(function(error) {
+                           expect(error).toBeNull();
+                       });
+   
+                   window.Curbside.getTrackingIdentifier()
+                       .then(function(trackingIdentifier) {
+                           expect(trackingIdentifier).toBe("CORDOVA_PLUGIN_TEST_TRACKING_ID");
+                       })
+                       .catch(function(error) {
+                           expect(error).toBeNull();
+                       });
    
                    //Avoid no expectation warning
                    expect(null).toBeNull();
@@ -60,34 +71,52 @@
                    expect(null).toBeNull();
                });
    
-               it('startAndCancelTripToSiteWithIdentifier', function () {
-                   window.Curbside.setTrackingIdentifier("CORDOVA_PLUGIN_TEST_TRACKING_ID", function (error) {
-                       expect(error).toBeNull();
-                   });
-                   
-                   window.Curbside.startTripToSiteWithIdentifier(destinationSiteId, "CORDOVA_PLUGIN_TEST_TRACKING_TOKEN", function (error) {
-                       expect(error).toBeNull();
-                   });
+               it('startAndCancelTripToSiteWithIdentifier934', function () {
+                   //Tracking token must be unique (e.g.: order id) and is used to differentiate trips.
+                   let trackingToken = 'CordovaTestUser' + Math.random().toString(10).substring(7);
+   
+                   window.Curbside.startTripToSiteWithIdentifier(destinationSiteId, trackingToken)
+                       .then(function() {})
+                       .catch(function(error) {
+                           expect(error).toBeNull();
+                       });
+   
+                   expect(errorFromErrorEvenHandler).toBeNull();
    
                    setTimeout(null, 5000);
    
-                   window.Curbside.getTrackedSites(function(error, sites){
-                       expect("Thihtoeh").toBeNull();
-                       expect(sites).toEqual([destinationSiteId]); 
-                   });
+                   window.Curbside.getTrackedSites()
+                       .then(function(sites){
+                           expect(sites).toEqual([destinationSiteId]); 
+                       })
+                       .catch(function(error){
+                           expect(error).toBeNull();
+                       })
+                   
+                   window.Curbside.cancelTripToSiteWithIdentifier(destinationSiteId, trackingToken)
+                       .then(function() {})
+                       .catch(function(error){
+                           expect(error).toBeNull();
+                       })
    
-                   window.Curbside.cancelTripToSiteWithIdentifier(destinationSiteId, 'CORDOVA_PLUGIN_TEST_TRACKING_TOKEN"', function (error) {
-                       expect(error).toBeNull();
-                   });
-   
-                   window.Curbside.getTrackedSites(function(error, sites){
-                       expect(error).toBeNull();
-                       expect(sites).toEqual([destinationSiteId]); 
-                   });
-   
+                   window.Curbside.getTrackedSites()
+                       .then(function(sites){
+                           expect(sites).toEqual([]); 
+                       })
+                       .catch(function(error){
+                           expect(error).toBeNull();
+                       })
+                   
                    //Avoid no expectation warning
                    expect(null).toBeNull();
                });
+   
+               // it('unregister event listeners2', function () {
+               //     window.Curbside.off("encounteredError", errorEventHandler);
+                       
+               //     //Avoid no expectation warning
+               //     expect(null).toBeNull();
+               // });
    
    
    
@@ -197,3 +226,5 @@
                'set_tracking'
            );
        };
+
+   
