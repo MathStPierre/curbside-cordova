@@ -200,25 +200,39 @@ or if you whant to have the monitoring session
 
 You can also configure the following variables to customize the iOS location plist entries
 
--   `LOCATION_WHEN_IN_USE_DESCRIPTION` for `NSLocationWhenInUseUsageDescription` (defaults to "To get accurate GPS
+  <config-file target="*-Info.plist" parent="NSLocationAlwaysAndWhenInUseUsageDescription">
+            <string>$LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION</string>
+        </config-file>
+        <config-file target="*-Info.plist" parent="NSLocationWhenInUseUsageDescription">
+            <string>$LOCATION_WHEN_IN_USE_DESCRIPTION</string>
+        </config-file>
+        <config-file target="*-Info.plist" parent="NSLocationUsageDescription">
+            <string>$LOCATION_USAGE_DESCRIPTION</string>
+        </config-file>
+      
+-   `LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION` for `NSLocationAlwaysAndWhenInUseUsageDescription` (defaults to "To get accurate GPS
     locations")
--   `LOCATION_ALWAYS_USAGE_DESCRIPTION` for `NSLocationAlwaysUsageDescription` (defaults to "To get accurate GPS
-    locations")
+-   `LOCATION_WHEN_IN_USE_DESCRIPTION` for `NSLocationWhenInUseUsageDescription` (defaults to "To get accurate GPS locations")
+-   `LOCATION_USAGE_DESCRIPTION` for `NSLocationUsageDescription` (defaults to "To get accurate GPS locations")
+
+
 
 Example using the Cordova CLI
 
 ```bash
 cordova plugin add curbside-cordova \
+    --variable LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION="My custom always usage message" \
     --variable LOCATION_WHEN_IN_USE_DESCRIPTION="My custom when in use message" \
-    --variable LOCATION_ALWAYS_USAGE_DESCRIPTION="My custom always usage message"
+    --variable LOCATION_USAGE_DESCRIPTION="My custom usage message"
 ```
 
 Example using config.xml
 
 ```xml
 <plugin name="curbside-cordova" spec="3.0.0">
+    <variable name="LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION" value="My custom always usage message" />
     <variable name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="My custom when in use message" />
-    <variable name="LOCATION_ALWAYS_USAGE_DESCRIPTION" value="My custom always usage message" />
+    <variable name="LOCATION_USAGE_DESCRIPTION" value="My custom usage message" />
 </plugin>
 ```
 
