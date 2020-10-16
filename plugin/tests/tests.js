@@ -34,7 +34,7 @@
                    expect(window.Curbside).toBeDefined();
                });
    
-               it('register event listeners2', function () {
+               it('register event listeners', function () {
                    window.Curbside.on("encounteredError", errorEventHandler);
                        
                    //Avoid no expectation warning
@@ -71,7 +71,7 @@
                    expect(null).toBeNull();
                });
    
-               it('startAndCancelTripToSiteWithIdentifier934', function () {
+               it('startAndCancelTripToSiteWithIdentifier', function () {
                    //Tracking token must be unique (e.g.: order id) and is used to differentiate trips.
                    let trackingToken = 'CordovaTestUser' + Math.random().toString(10).substring(7);
    
