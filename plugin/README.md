@@ -20,7 +20,7 @@ cordova plugin add [curbside-cordova repo]/plugin/
 
 ### iOS
 
-Enable Background Modes
+***Enable Background Modes***
 
 1. From the Project Navigator, select your project.
 2. Select your target.
@@ -46,7 +46,7 @@ In `platforms/ios/YOUR_PROJECT/Classes/AppDelegate.m`
 @import Curbside;
 ```
 
-#### User Session
+#### **User Session**
 
 -   At the end of `-(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions` add this:
 
@@ -55,13 +55,53 @@ In `platforms/ios/YOUR_PROJECT/Classes/AppDelegate.m`
   [userSession application:application didFinishLaunchingWithOptions:launchOptions];
 ```
 
-#### Monitoring Session
+#### **Monitoring Session**
 
 If your app does not already request location, In `platforms/ios/YOUR_PROJECT/Classes/AppDelegate.m` in `-(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions` add this:
 
 ```objc
     CSMonitoringSession *monitoringSession = [CSMonitoringSession createSessionWithAPIKey:@"APIKey" secret:@"secret" delegate:nil];
     [monitoringSession application:application didFinishLaunchingWithOptions:launchOptions];
+```
+
+#### **Configuration**
+
+You can also configure the following variables to customize the iOS location plist entries
+
+  <config-file target="*-Info.plist" parent="NSLocationAlwaysAndWhenInUseUsageDescription">
+            <string>$LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION</string>
+        </config-file>
+        <config-file target="*-Info.plist" parent="NSLocationWhenInUseUsageDescription">
+            <string>$LOCATION_WHEN_IN_USE_DESCRIPTION</string>
+        </config-file>
+        <config-file target="*-Info.plist" parent="NSLocationUsageDescription">
+            <string>$LOCATION_USAGE_DESCRIPTION</string>
+        </config-file>
+      
+-   `LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION` for `NSLocationAlwaysAndWhenInUseUsageDescription` (defaults to "To get accurate GPS
+    locations")
+-   `LOCATION_WHEN_IN_USE_DESCRIPTION` for `NSLocationWhenInUseUsageDescription` (defaults to "To get accurate GPS locations")
+-   `LOCATION_USAGE_DESCRIPTION` for `NSLocationUsageDescription` (defaults to "To get accurate GPS locations")
+
+
+
+Example using the Cordova CLI
+
+```bash
+cordova plugin add curbside-cordova \
+    --variable LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION="My custom always usage message" \
+    --variable LOCATION_WHEN_IN_USE_DESCRIPTION="My custom when in use message" \
+    --variable LOCATION_USAGE_DESCRIPTION="My custom usage message"
+```
+
+Example using config.xml
+
+```xml
+<plugin name="curbside-cordova" spec="3.0.0">
+    <variable name="LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION" value="My custom always usage message" />
+    <variable name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="My custom when in use message" />
+    <variable name="LOCATION_USAGE_DESCRIPTION" value="My custom usage message" />
+</plugin>
 ```
 
 ### Android
@@ -107,7 +147,7 @@ Otherwise, you will experience the following error:
            project :
 ```
 
-#### Add Firebase in your app
+#### **Add Firebase in your app**
 
 1. Go to <a href="https://console.firebase.google.com/u/0/">Firebase Console</a> and click **Add project**.
 
@@ -128,9 +168,9 @@ Otherwise, you will experience the following error:
 
 ![Image of Add Project](./Add_Firebase_Sdk.png)
 
-3. **Make sure** that all the google dependencies are of the same version. Otherwise, app may throw errors/exceptions when running/syncing the project.
+8. **Make sure** that all the google dependencies are of the same version. Otherwise, app may throw errors/exceptions when running/syncing the project.
 
-#### Setup your MainActivity
+#### **Setup your MainActivity**
 
 In `platforms/android/app/src/main/java/io/cordova/YOUR_PROJECT/MainActivity.java` add your usage token and permission notification:
 
@@ -172,45 +212,6 @@ or if you whant to have the monitoring session
         ...
 ```
 
-## Configuration
-
-You can also configure the following variables to customize the iOS location plist entries
-
-  <config-file target="*-Info.plist" parent="NSLocationAlwaysAndWhenInUseUsageDescription">
-            <string>$LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION</string>
-        </config-file>
-        <config-file target="*-Info.plist" parent="NSLocationWhenInUseUsageDescription">
-            <string>$LOCATION_WHEN_IN_USE_DESCRIPTION</string>
-        </config-file>
-        <config-file target="*-Info.plist" parent="NSLocationUsageDescription">
-            <string>$LOCATION_USAGE_DESCRIPTION</string>
-        </config-file>
-      
--   `LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION` for `NSLocationAlwaysAndWhenInUseUsageDescription` (defaults to "To get accurate GPS
-    locations")
--   `LOCATION_WHEN_IN_USE_DESCRIPTION` for `NSLocationWhenInUseUsageDescription` (defaults to "To get accurate GPS locations")
--   `LOCATION_USAGE_DESCRIPTION` for `NSLocationUsageDescription` (defaults to "To get accurate GPS locations")
-
-
-
-Example using the Cordova CLI
-
-```bash
-cordova plugin add curbside-cordova \
-    --variable LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION="My custom always usage message" \
-    --variable LOCATION_WHEN_IN_USE_DESCRIPTION="My custom when in use message" \
-    --variable LOCATION_USAGE_DESCRIPTION="My custom usage message"
-```
-
-Example using config.xml
-
-```xml
-<plugin name="curbside-cordova" spec="3.0.0">
-    <variable name="LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION" value="My custom always usage message" />
-    <variable name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="My custom when in use message" />
-    <variable name="LOCATION_USAGE_DESCRIPTION" value="My custom usage message" />
-</plugin>
-```
 
 ## Quick Start
 
