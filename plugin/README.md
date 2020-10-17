@@ -118,45 +118,21 @@ Otherwise, you will experience the following error:
 ![Image of Add Project](./Add_Project.png)
 
 3. Click **Add Firebase to your Android app** and follow the setup steps.
-4. When prompted, enter your app's package name. Package name can only be set when you add an app to your Firebase project.
+
+![Image of Add Project](./Firebase_Android.png)
+
+4. When prompted, enter your app's package name (i.e.: 'PACKAGE_NAME' Json property of your Android application). Package name can only be set when you add an app to your Firebase project on the Firebase web page.
 5. At the end, you'll download a google-services.json file. You can download this file again at any time.
 6. Copy google-services.json file into your project's module folder, typically app.
+7. Follow the instructions to add the Firebase SDK in your Android app.
 
-#### Add the Firebase SDK in your app
-
-1. First, add rules to your root-level `/platforms/android/build.gradle` file, to include the google-services plugin and the Google's Maven repository:
-
-```java
-buildscript {
-    // ...
-    dependencies {
-        // ...
-        classpath 'com.google.gms:google-services:3.0.0' // google-services plugin
-    }
-}
-
-allprojects {
-    // ...
-    repositories {
-        // ...
-        maven {
-            url "https://maven.google.com" // Google's Maven repository
-        }
-    }
-}
-```
-
-2. Then, in your module Gradle file `/platforms/android/app/build.gradle`, add at the bottom of the file to enable the Gradle plugin:
-
-```java
-apply plugin: 'com.google.gms.google-services'
-```
+![Image of Add Project](./Add_Firebase_Sdk.png)
 
 3. **Make sure** that all the google dependencies are of the same version. Otherwise, app may throw errors/exceptions when running/syncing the project.
 
 #### Setup your MainActivity
 
-In `platforms/android/src/main/java/com/YOUR_PROJECT/MainActivity.java` add your usage token and permission notification:
+In `platforms/android/app/src/main/java/io/cordova/YOUR_PROJECT/MainActivity.java` add your usage token and permission notification:
 
 ```java
     private static String USAGE_TOKEN = "USAGE_TOKEN";
