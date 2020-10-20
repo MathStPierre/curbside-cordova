@@ -18,17 +18,6 @@
  *
  */
 
-let errorFromErrorEvenHandler = null
-let siteFromTripStartedForSiteEventHandler = null
-
-let errorEventHandler = function (error) {
-    errorFromErrorEvenHandler = error
-};
-
-let tripStartedForSiteEventHandler = function (site) {
-    siteFromTripStartedForSiteEventHandler = site
-};
-
 let trackingToken = null;
 
 function createNewTrackingToken() {
@@ -39,26 +28,11 @@ function createNewTrackingToken() {
 let destinationSiteId = 'rakutenreadydemo_100'
 let trackingId = 'CurbsideCordovaTestsPlugin'
 
-
-
-// Usage!
-//   sleep(500).then(() => {
-//       // Do something after the sleep!
-//   });
-
 exports.defineAutoTests = function () {
     describe('Curbside', function () {
 
         it('should exist', function () {
             expect(window.Curbside).toBeDefined();
-        });
-
-        it('register event listeners', function () {
-            window.Curbside.on("encounteredError", errorEventHandler);
-            window.Curbside.on("tripStartedForSite", tripStartedForSiteEventHandler);
-
-            //Avoid no expectation warning
-            expect(null).toBeNull();
         });
 
         it('setTrackingIdentifier', function () {
@@ -108,38 +82,27 @@ exports.defineAutoTests = function () {
                     expect(error).toBeNull();
                 })
 
-            // window.Curbside.cancelTripToSiteWithIdentifier(destinationSiteId, trackingToken)
-            //     .then(function () { })
-            //     .catch(function (error) {
-            //         expect(error).toBeNull();
-            //     })
+            window.Curbside.cancelTripToSiteWithIdentifier(destinationSiteId, trackingToken)
+                .then(function () { })
+                .catch(function (error) {
+                    expect(error).toBeNull();
+                })
 
-            // window.Curbside.getTrackedSites()
-            //     .then(function (sites) {
-            //         expect(sites).toEqual([]);
-            //     })
-            //     .catch(function (error) {
-            //         expect(error).toBeNull();
-            //     })
+            window.Curbside.getTrackedSites()
+                .then(function (sites) {
+                    expect(sites).toEqual([]);
+                })
+                .catch(function (error) {
+                    expect(error).toBeNull();
+                })
 
             //Avoid no expectation warning
             expect(null).toBeNull();
         });
 
         it('cancelTripToSiteWithIdentifier', function () {
-
-            // while (errorFromErrorEvenHandler == null && siteFromTripStartedForSiteEventHandler == null) {
-            // }
-
             expect(errorFromErrorEvenHandler).toBeNull();
             expect(siteFromTripStartedForSiteEventHandler).toEqual(destinationSiteId);
-
-            // while (errorFromErrorEvenHandler == null && siteFromTripStartedForSiteEventHandler == null);
-
-            // expect(errorFromErrorEvenHandler).toBeNull();
-            // expect(siteFromTripStartedForSiteEventHandler).toEqual(destinationSiteId);
-
-            // setTimeout(null, 5000);
 
             window.Curbside.getTrackedSites()
                 .then(function (sites) {
@@ -166,16 +129,10 @@ exports.defineAutoTests = function () {
             //Avoid no expectation warning
             expect(null).toBeNull();
         });
-
-        it('unregister event listeners', function () {
-            // window.Curbside.off("encounteredError", errorEventHandler);
-            // window.Curbside.off("tripStartedForSite", tripStartedForSiteEventHandler);
-
-            //Avoid no expectation warning
-            expect(null).toBeNull();
-        });
     });
 };
+
+let areEventHandlersForManualTestSetup = false;
 
 exports.defineManualTests = function (contentEl, createActionButton) {
     var logMessage = function (message, color) {
@@ -203,14 +160,13 @@ exports.defineManualTests = function (contentEl, createActionButton) {
 
     contentEl.innerHTML = '<div id="info"></div>' + curbside_tests;
 
-    let errorEventHandler = function (error) { logMessage("Start trip error : " + error, 'red'); };
-    let tripStartedEventHandler = function (site) {
-        let siteStr = site.toString()
-        logMessage("Trip started for site : " + site.siteIdentifier, 'green');
+    if (!areEventHandlersForManualTestSetup) {
+        let errorEventHandler = function (error) { logMessage("Start trip error : " + error, 'red'); };
+        let tripStartedEventHandler = function (site) { logMessage("Trip started for site : " + site.siteIdentifier, 'green'); };
+        window.Curbside.on("encounteredError", errorEventHandler);
+        window.Curbside.on("tripStartedForSite", tripStartedEventHandler);
+        areEventHandlerForManualTestSetup = true;
     }
-
-    window.Curbside.on("encounteredError", errorEventHandler);
-    window.Curbside.on("tripStartedForSite", tripStartedEventHandler);
 
     createActionButton(
         'Start Trip',
