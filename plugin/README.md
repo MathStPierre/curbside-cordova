@@ -228,6 +228,13 @@ document.addEventListener("deviceready", function() {
   });
 
   /**
+   * Will be triggered when an trip is started for a site.
+   **/
+  Curbside.on("tripStartedForSite", function(site){
+    // Do something
+  });
+
+  /**
    * Will be triggered when the user is approaching a site which is currently tracked for a trip.
    **/
   Curbside.on("userApproachingSite", function(site){
