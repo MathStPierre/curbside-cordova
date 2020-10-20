@@ -99,36 +99,6 @@ exports.defineAutoTests = function () {
             //Avoid no expectation warning
             expect(null).toBeNull();
         });
-
-        it('cancelTripToSiteWithIdentifier', function () {
-            expect(errorFromErrorEvenHandler).toBeNull();
-            expect(siteFromTripStartedForSiteEventHandler).toEqual(destinationSiteId);
-
-            window.Curbside.getTrackedSites()
-                .then(function (sites) {
-                    expect(sites).toEqual([destinationSiteId]);
-                })
-                .catch(function (error) {
-                    expect(error).toBeNull();
-                })
-
-            window.Curbside.cancelTripToSiteWithIdentifier(destinationSiteId, trackingToken)
-                .then(function () { })
-                .catch(function (error) {
-                    expect(error).toBeNull();
-                })
-
-            window.Curbside.getTrackedSites()
-                .then(function (sites) {
-                    expect(sites).toEqual([]);
-                })
-                .catch(function (error) {
-                    expect(error).toBeNull();
-                })
-
-            //Avoid no expectation warning
-            expect(null).toBeNull();
-        });
     });
 };
 
@@ -153,10 +123,14 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     var curbside_tests = '<h3>Press Start Trip button to start trip</h3>' +
         '<div id="start_trip"></div>' +
         'Expected result: Trip started for ' + destinationSiteId + ' site with no error' +
-        '<div id="complete_all"></div>' +
-        'Expected result: All trips marked as completed with no error' +
         '<div id="complete_to_site_with_id"></div>' +
-        'Expected result: Trip to ' + destinationSiteId + ' with tracking token marked as completed with no error';
+        'Expected result: Trip to ' + destinationSiteId + ' with tracking token marked as completed with no error' +
+        '<div id="complete_all"></div>' +
+        'Expected result: All open trips having now a timestamp value in their respective serviced_at field' +
+        '<div id="cancel_all"></div>' +
+        'Expected result: All trips marked as cancelled with no error' +
+        '<div id="cancel_to_site_with_id"></div>' +
+        'Expected result: Trip to ' + destinationSiteId + ' with tracking token marked as cancelled with no error';
 
     contentEl.innerHTML = '<div id="info"></div>' + curbside_tests;
 
@@ -227,5 +201,41 @@ exports.defineManualTests = function (contentEl, createActionButton) {
                 });
         },
         'complete_all'
+    );
+
+    createActionButton(
+        'Cancel Trip To Site With Identifier',
+        function () {
+
+            clearLog()
+            logMessage("Cancel Trip To Site With Identifier");
+
+            window.Curbside.cancelTripToSiteWithIdentifier(destinationSiteId, trackingToken)
+                .then(function () {
+                    logMessage('Successful cancelTripToSiteWithIdentifier call with tracking token ' + trackingToken, 'green');
+                })
+                .catch(function (error) {
+                    logMessage('Error occured when calling cancelTripToSiteWithIdentifier : ' + error, 'red');
+                });
+        },
+        'cancel_to_site_with_id'
+    );
+
+    createActionButton(
+        'Cancel All',
+        function () {
+
+            clearLog()
+            logMessage("Cancel All");
+
+            window.Curbside.cancelAllTrips()
+                .then(function () {
+                    logMessage('Successful cancelAllTrips call', 'green');
+                })
+                .catch(function (error) {
+                    logMessage('Error occured when calling cancelAllTrips : ' + error, 'red');
+                });
+        },
+        'cancel_all'
     );
 };
