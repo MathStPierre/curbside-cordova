@@ -179,6 +179,12 @@ Otherwise, you will experience the following error:
 In `platforms/android/app/src/main/java/io/cordova/YOUR_PROJECT/MainActivity.java` add your usage token and permission notification:
 
 ```java
+    import android.content.pm.PackageManager;
+    import android.Manifest;
+    import android.support.v4.app.ActivityCompat;
+    import com.curbside.sdk.credentialprovider.TokenCurbsideCredentialProvider;
+    import com.curbside.sdk.CSUserSession;
+
     private static String USAGE_TOKEN = "USAGE_TOKEN";
     private static final int PERMISSION_REQUEST_CODE = 1;
 
