@@ -45,7 +45,7 @@ exports.defineAutoTests = function () {
 
             window.Curbside.getTrackingIdentifier()
                 .then(function (trackingIdentifier) {
-                    expect(trackingIdentifier).toBe("CORDOVA_PLUGIN_TEST_TRACKING_ID");
+                    expect(trackingIdentifier).toBe(trackingId);
                 })
                 .catch(function (error) {
                     expect(error).toBeNull();
