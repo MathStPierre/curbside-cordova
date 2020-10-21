@@ -15,7 +15,7 @@ cordova plugin add curbside-cordova
 _Develop version_
 
 ```bash
-cordova plugin add [curbside-cordova repo]/plugin/
+cordova plugin add https://github.com/RakutenReady/curbside-cordova.git
 ```
 
 ### iOS
