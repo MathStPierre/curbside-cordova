@@ -181,45 +181,56 @@ In `platforms/android/app/src/main/java/io/cordova/YOUR_PROJECT/MainActivity.jav
 ```java
     import android.content.pm.PackageManager;
     import android.Manifest;
-    import android.support.v4.app.ActivityCompat;
+    import androidx.core.app.ActivityCompat;
     import com.curbside.sdk.credentialprovider.TokenCurbsideCredentialProvider;
     import com.curbside.sdk.CSUserSession;
 
-    private static String USAGE_TOKEN = "USAGE_TOKEN";
-    private static final int PERMISSION_REQUEST_CODE = 1;
+    public class MainActivity extends CordovaActivity
+    {
+      private static String USAGE_TOKEN = "USAGE_TOKEN";
+      private static final int PERMISSION_REQUEST_CODE = 1;
 
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        CSUserSession.init(this, new TokenCurbsideCredentialProvider(USAGE_TOKEN));
+      @Override
+      public void onCreate(final Bundle savedInstanceState) {
+          super.onCreate(savedInstanceState);
+          CSUserSession.init(this, new TokenCurbsideCredentialProvider(USAGE_TOKEN));
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            String[] permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
-            ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE);
-        }
+          if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                  ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+              String[] permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
+              ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE);
+          }
         ...
 ```
 
 or if you whant to have the monitoring session
 
 ```java
-    private static String API_KEY = "API_KEY";
-    private static String SECRET = "SECRET";
-    private static final int PERMISSION_REQUEST_CODE = 1;
+    public class MainActivity extends CordovaActivity
+    {
+      private static String API_KEY = "API_KEY";
+      private static String SECRET = "SECRET";
+      private static final int PERMISSION_REQUEST_CODE = 1;
 
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+      @Override
+      public void onCreate(final Bundle savedInstanceState) {
+          super.onCreate(savedInstanceState);
 
-        CSMonitoringSession.init(this, new BasicAuthCurbsideCredentialProvider(API_KEY, SECRET));
+          CSMonitoringSession.init(this, new BasicAuthCurbsideCredentialProvider(API_KEY, SECRET));
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            String[] permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
-            ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE);
-        }
+          if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                  ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+              String[] permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
+              ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE);
+          }
         ...
+```
+
+In `platforms/android/cordova/lib/config/GradlePropertiesParser.js` turned on useAndroidX:
+
+```js
+'android.useAndroidX': 'true',
+'android.enableJetifier': 'true'
 ```
 
 ## Quick Testing
