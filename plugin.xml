@@ -32,6 +32,12 @@
         <source-file src="src/android/com/curbside/CurbsideCordovaPlugin.java" target-dir="src/com/curbside/" />
         <framework src='com.curbside:sdk:3.4'  />
         <framework src='joda-time:joda-time:2.4'  />
+        <framework src='com.google.android.gms:play-services-analytics:17.0.0'  />
+        <framework src='com.google.android.gms:play-services-gcm:17.0.0'  />
+        <framework src='com.google.android.gms:play-services-location:17.0.0'  />
+        <framework src='com.google.android.gms:play-services-maps:17.0.0'  />
+        <framework src='com.google.firebase:firebase-core:17.0.0'  />
+        <framework src='com.google.firebase:firebase-messaging:17.0.0'  />
     </platform>
     <!-- ios -->
     <platform name="ios">
