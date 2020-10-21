@@ -227,11 +227,12 @@ cordova platform add android
 cordova platform add ios
 #Currently geolocation plugin and its test plugin are required because curbside-cordova plugin is not able to display the location authorization dialog (known issue).
 cordova plugin add cordova-plugin-geolocation
-cordova plugin add [cordova-app-location]/plugins/cordova-plugin-geolocation/tests
-#--------
+cordova plugin add ./plugins/cordova-plugin-geolocation/tests
+#--------------------------
 
 cordova plugin add cordova-plugin-test-framework
-cordova plugin add [cordova-app-location]/plugins/curbside-cordova/tests
+cordova plugin add curbside-cordova
+cordova plugin add ./plugins/curbside-cordova/tests
 ```
 
 After that in [cordova-app-location]/config.xml you need to replace:
