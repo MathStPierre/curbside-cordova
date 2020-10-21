@@ -164,14 +164,14 @@ Otherwise, you will experience the following error:
 
 3. Click **Add Firebase to your Android app** and follow the setup steps.
 
-![Image of Add Project](./Firebase_Android.png)
+![Image of Firebase Android](./Firebase_Android.png)
 
 4. When prompted, enter your app's package name (i.e.: 'PACKAGE_NAME' Json property of your Android application). Package name can only be set when you add an app to your Firebase project on the Firebase web page.
 5. At the end, you'll download a google-services.json file. You can download this file again at any time.
 6. Copy google-services.json file into your project's module folder, typically app.
 7. Follow the instructions to add the Firebase SDK in your Android app.
 
-![Image of Add Project](./Add_Firebase_Sdk.png)
+![Image of Add Firebase Sdk](./Add_Firebase_Sdk.png)
 
 8. **Make sure** that all the google dependencies are of the same version. Otherwise, app may throw errors/exceptions when running/syncing the project.
 
@@ -258,7 +258,13 @@ Note that you can use your current Cordova application to do the testing.
 
 ### Running Automatic And Manual Tests
 
+The **curbside-cordova-tests** plugin contains automatic tests and manual tests. It is recommended to first run the automatic tests so that the **cordova-plugin-geolocation-tests** are run first thus triggering the location authorization dialog to prompt the user to give access to mobile device location. 
 
+![Image of iOS Location Authorization Dialog](./Location_Authorization_Dialog.png)
+
+It is important to allow the Cordova application to have access to location so that starting a curbside trip works successfully. 
+
+Once it is done the manual tests available in **curbside-cordova-tests** plugin can be tested. Those tests involve clicking on buttons to do such a thing as starting a curbside trip and completing/cancelling a trip or all opened trips.
 
 
 ## Quick Start
