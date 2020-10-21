@@ -120,10 +120,8 @@ Replace
 ```java
 allprojects {
     repositories {
+        google()
         jcenter()
-        maven {
-            url "https://maven.google.com"
-        }
     }
 }
 ```
@@ -133,6 +131,7 @@ by:
 ```java
 allprojects {
     repositories {
+        google()
         jcenter()
         maven {
             url "https://maven.google.com"
