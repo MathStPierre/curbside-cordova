@@ -19,6 +19,11 @@ _Develop version_
 cordova plugin add https://github.com/RakutenReady/curbside-cordova.git
 ```
 
+### Requirements
+
+- Cordova application which is supporting at least iOS or Android platform.
+- USAGE_TOKEN which is unique token that is provided by RakutenReady.
+
 ### iOS
 
 ***Enable Background Modes***
