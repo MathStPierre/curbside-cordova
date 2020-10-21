@@ -4,6 +4,7 @@ This plugin is a wrapper for [Curbside SDK](https://developer.curbside.com/docs/
 
 ---
 
+<a name="quick_install"></a>
 ## Quick install
 
 _Stable version(npm)_
@@ -82,7 +83,6 @@ You can also configure the following variables to customize the iOS location pli
     locations")
 -   `LOCATION_WHEN_IN_USE_DESCRIPTION` for `NSLocationWhenInUseUsageDescription` (defaults to "To get accurate GPS locations")
 -   `LOCATION_USAGE_DESCRIPTION` for `NSLocationUsageDescription` (defaults to "To get accurate GPS locations")
-
 
 
 Example using the Cordova CLI
@@ -211,6 +211,48 @@ or if you whant to have the monitoring session
         }
         ...
 ```
+
+## Quick Testing
+
+The **curbside-cordova** plugin also contains a **curbside-cordova-tests** plugin that can be used to quickly test if the **curbside-cordova** plugin is working properly and if the installation was done correctly. 
+
+### Create Cordova Test App And Install Plugins
+
+To do the testing you first needs to create a cordova application and install the required plugin as follows: 
+
+```bash
+cordova create mytestapp
+cd ./mytestapp
+cordova platform add android
+cordova platform add ios
+#Currently geolocation plugin and its test plugin are required because curbside-cordova plugin is not able to display the location authorization dialog (known issue).
+cordova plugin add cordova-plugin-geolocation
+cordova plugin add [cordova-app-location]/plugins/cordova-plugin-geolocation/tests
+#--------
+
+cordova plugin add cordova-plugin-test-framework
+cordova plugin add [cordova-app-location]/plugins/curbside-cordova/tests
+```
+
+After that in [cordova-app-location]/config.xml you need to replace:
+
+```html
+<content src="index.html" />
+```
+by
+
+```html
+<content src="cdvtests/index.html" />
+```
+
+Finally follow the [Quick Install](#quick_install) to ensure Curbside-Cordova is working properly.
+
+Note that you can use your current Cordova application to do the testing. 
+
+
+### Running Automatic And Manual Tests
+
+
 
 
 ## Quick Start
