@@ -30,7 +30,7 @@
             </feature>
         </config-file>
         <source-file src="src/android/com/curbside/CurbsideCordovaPlugin.java" target-dir="src/com/curbside/" />
-        <framework src='com.curbside:sdk:3.2.4'  />
+        <framework src='com.curbside:sdk:3.4'  />
         <framework src='joda-time:joda-time:2.4'  />
     </platform>
     <!-- ios -->
