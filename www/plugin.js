@@ -5,11 +5,12 @@ var PLUGIN_NAME = "CurbsideCordovaPlugin";
 var eventListeners = {
     userStatusUpdates: [],
     canNotifyMonitoringSessionUserAtSite: [],
+    tripStartedForSite: [],
     userApproachingSite: [],
     userArrivedAtSite: [],
     encounteredError: [],
     updatedTrackedSites: [],
-    changedState: [],
+    changedState: []
 };
 
 function execCb(name, cb) {

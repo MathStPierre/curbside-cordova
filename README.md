@@ -4,6 +4,7 @@ This plugin is a wrapper for [Curbside SDK](https://developer.curbside.com/docs/
 
 ---
 
+<a name="quick_install"></a>
 ## Quick install
 
 _Stable version(npm)_
@@ -15,44 +16,24 @@ cordova plugin add curbside-cordova
 _Develop version_
 
 ```bash
-cordova plugin add https://github.com/Curbside/curbside-cordova.git
+cordova plugin add https://github.com/RakutenReady/curbside-cordova.git
 ```
+
+### Requirements
+
+- Cordova application which is supporting at least iOS or Android platform.
+- USAGE_TOKEN which is unique token that is provided by RakutenReady.
 
 ### iOS
 
-In `platforms/ios/YOUR_PROJECT/Classes/AppDelegate.m`
-
--   Add on top
-
-```objc
-@import Curbside;
-```
-
-#### User Session
-
--   At the end of `-(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions` add this:
-
-```objc
-  CSUserSession *sdksession = [CSUserSession createSessionWithUsageToken:@"USAGE_TOKEN" delegate:nil];
-  [sdksession application:application didFinishLaunchingWithOptions:launchOptions];
-```
-
-#### Monitoring Session
-
-If your app does not already request location, In `platforms/ios/YOUR_PROJECT/Classes/AppDelegate.m` in `-(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions` add this:
-
-```objc
-    CSMonitoringSession *sdksession = [CSMonitoringSession createSessionWithAPIKey:@"APIKey" secret:@"secret" delegate:nil];
-    [sdksession application:application didFinishLaunchingWithOptions:launchOptions];
-```
-
-Enable Background Modes
+***Enable Background Modes***
 
 1. From the Project Navigator, select your project.
 2. Select your target.
-3. Select Capabilities.
-4. Scroll down to Background Modes.
-5. Check Location updates and Background fetch.
+3. Select Signing and Capabilities.
+4. Scroll down to capabitilies section and search for Background Modes capability.
+5. If Background Modes capability is not found just add it by clicking + button at the top left.
+6. Check Location updates and Background fetch.
 
 ![Image of background modes](./backgroundModes.png)
 
@@ -63,28 +44,68 @@ Otherwise you will get
 *** Terminating app due to uncaught exception 'NSInternalInconsistencyException', reason: 'Invalid parameter not satisfying: !stayUp || CLClientIsBackgroundable(internal->fClient)'
 ```
 
-#### Fixing the Podfile iOS version
+In `platforms/ios/YOUR_PROJECT/Classes/AppDelegate.m`
 
-> We're currently awaiting for one of our fixes to be merged in the Cordova core. Until this is available, this step is needed.
+-   Add on top
 
-If you are experiencing this error:
-
-```
-Installing "curbside-cordova" for ios
-Failed to install 'curbside-cordova': Error: pod: Command failed with exit code 1
-    at ChildProcess.whenDone (/path/to/your/project/platforms/ios/cordova/node_modules/cordova-common/src/superspawn.js:169:23)
-    at emitTwo (events.js:125:13)
-    at ChildProcess.emit (events.js:213:7)
-    at maybeClose (internal/child_process.js:887:16)
-    at Process.ChildProcess._handle.onexit (internal/child_process.js:208:5)
-Error: pod: Command failed with exit code 1
+```objc
+@import Curbside;
 ```
 
-In your project, edit the file `platforms/ios/Podfile`. Replace `platform :ios, '8.0'` by `platform :ios,'9.0'` Then in
-a terminal go to `platforms/ios` and execute
+#### **User Session**
+
+-   At the end of `-(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions` add this:
+
+```objc
+  CSUserSession *userSession = [CSUserSession createSessionWithUsageToken:@"USAGE_TOKEN" delegate:nil];
+  [userSession application:application didFinishLaunchingWithOptions:launchOptions];
+```
+
+#### **Monitoring Session**
+
+If your app does not already request location, In `platforms/ios/YOUR_PROJECT/Classes/AppDelegate.m` in `-(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions` add this:
+
+```objc
+    CSMonitoringSession *monitoringSession = [CSMonitoringSession createSessionWithAPIKey:@"APIKey" secret:@"secret" delegate:nil];
+    [monitoringSession application:application didFinishLaunchingWithOptions:launchOptions];
+```
+
+#### **Configuration**
+
+You can also configure the following variables to customize the iOS location plist entries
+
+  <config-file target="*-Info.plist" parent="NSLocationAlwaysAndWhenInUseUsageDescription">
+            <string>$LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION</string>
+        </config-file>
+        <config-file target="*-Info.plist" parent="NSLocationWhenInUseUsageDescription">
+            <string>$LOCATION_WHEN_IN_USE_DESCRIPTION</string>
+        </config-file>
+        <config-file target="*-Info.plist" parent="NSLocationUsageDescription">
+            <string>$LOCATION_USAGE_DESCRIPTION</string>
+        </config-file>
+      
+-   `LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION` for `NSLocationAlwaysAndWhenInUseUsageDescription` (defaults to "The app uses your location to help the store prepare for your arrival when you have an open order.")
+-   `LOCATION_WHEN_IN_USE_DESCRIPTION` for `NSLocationWhenInUseUsageDescription` (defaults to "The app uses your location to help the store prepare for your arrival when you have an open order.")
+-   `LOCATION_USAGE_DESCRIPTION` for `NSLocationUsageDescription` (defaults to "The app uses your location to help the store prepare for your arrival when you have an open order.")
+
+
+Example using the Cordova CLI
 
 ```bash
-pod install
+cordova plugin add curbside-cordova \
+    --variable LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION="My custom always usage message" \
+    --variable LOCATION_WHEN_IN_USE_DESCRIPTION="My custom when in use message" \
+    --variable LOCATION_USAGE_DESCRIPTION="My custom usage message"
+```
+
+Example using config.xml
+
+```xml
+<plugin name="curbside-cordova" spec="3.0.0">
+    <variable name="LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION" value="My custom always usage message" />
+    <variable name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="My custom when in use message" />
+    <variable name="LOCATION_USAGE_DESCRIPTION" value="My custom usage message" />
+</plugin>
 ```
 
 ### Android
@@ -98,10 +119,8 @@ Replace
 ```java
 allprojects {
     repositories {
+        google()
         jcenter()
-        maven {
-            url "https://maven.google.com"
-        }
     }
 }
 ```
@@ -111,6 +130,7 @@ by:
 ```java
 allprojects {
     repositories {
+        google()
         jcenter()
         maven {
             url "https://maven.google.com"
@@ -130,7 +150,7 @@ Otherwise, you will experience the following error:
            project :
 ```
 
-#### Add Firebase in your app
+#### **Add Firebase in your app**
 
 1. Go to <a href="https://console.firebase.google.com/u/0/">Firebase Console</a> and click **Add project**.
 
@@ -141,109 +161,126 @@ Otherwise, you will experience the following error:
 ![Image of Add Project](./Add_Project.png)
 
 3. Click **Add Firebase to your Android app** and follow the setup steps.
-4. When prompted, enter your app's package name. Package name can only be set when you add an app to your Firebase project.
+
+![Image of Firebase Android](./Firebase_Android.png)
+
+4. When prompted, enter your app's package name (i.e.: 'PACKAGE_NAME' Json property of your Android application). Package name can only be set when you add an app to your Firebase project on the Firebase web page.
 5. At the end, you'll download a google-services.json file. You can download this file again at any time.
 6. Copy google-services.json file into your project's module folder, typically app.
+7. Follow the instructions to add the Firebase SDK in your Android app.
 
-#### Add the Firebase SDK in your app
+![Image of Add Firebase Sdk](./Add_Firebase_Sdk.png)
 
-1. First, add rules to your root-level `/platforms/android/build.gradle` file, to include the google-services plugin and the Google's Maven repository:
+8. **Make sure** that all the google dependencies are of the same version. Otherwise, app may throw errors/exceptions when running/syncing the project.
 
-```java
-buildscript {
-    // ...
-    dependencies {
-        // ...
-        classpath 'com.google.gms:google-services:3.0.0' // google-services plugin
-    }
-}
+#### **Setup your MainActivity**
 
-allprojects {
-    // ...
-    repositories {
-        // ...
-        maven {
-            url "https://maven.google.com" // Google's Maven repository
-        }
-    }
-}
-```
-
-2. Then, in your module Gradle file `/platforms/android/app/build.gradle`, add at the bottom of the file to enable the Gradle plugin:
+In `platforms/android/app/src/main/java/io/cordova/YOUR_PROJECT/MainActivity.java` add your usage token and permission notification:
 
 ```java
-apply plugin: 'com.google.gms.google-services'
-```
+    import android.content.pm.PackageManager;
+    import android.Manifest;
+    import androidx.core.app.ActivityCompat;
+    import com.curbside.sdk.credentialprovider.TokenCurbsideCredentialProvider;
+    import com.curbside.sdk.CSUserSession;
 
-3. **Make sure** that all the google dependencies are of the same version. Otherwise, app may throw errors/exceptions when running/syncing the project.
+    public class MainActivity extends CordovaActivity
+    {
+      private static String USAGE_TOKEN = "USAGE_TOKEN";
+      private static final int PERMISSION_REQUEST_CODE = 1;
 
-#### Setup your MainActivity
+      @Override
+      public void onCreate(final Bundle savedInstanceState) {
+          super.onCreate(savedInstanceState);
+          CSUserSession.init(this, new TokenCurbsideCredentialProvider(USAGE_TOKEN));
 
-In `platforms/android/src/main/java/com/YOUR_PROJECT/MainActivity.java` add your usage token and permission notification:
-
-```java
-    private static String USAGE_TOKEN = "USAGE_TOKEN";
-    private static final int PERMISSION_REQUEST_CODE = 1;
-
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        CSUserSession.init(this, new TokenCurbsideCredentialProvider(USAGE_TOKEN));
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            String[] permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
-            ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE);
-        }
+          if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                  ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+              String[] permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
+              ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE);
+          }
         ...
 ```
 
 or if you whant to have the monitoring session
 
 ```java
-    private static String API_KEY = "API_KEY";
-    private static String SECRET = "SECRET";
-    private static final int PERMISSION_REQUEST_CODE = 1;
+    public class MainActivity extends CordovaActivity
+    {
+      private static String API_KEY = "API_KEY";
+      private static String SECRET = "SECRET";
+      private static final int PERMISSION_REQUEST_CODE = 1;
 
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+      @Override
+      public void onCreate(final Bundle savedInstanceState) {
+          super.onCreate(savedInstanceState);
 
-        CSMonitoringSession.init(this, new BasicAuthCurbsideCredentialProvider(API_KEY, SECRET));
+          CSMonitoringSession.init(this, new BasicAuthCurbsideCredentialProvider(API_KEY, SECRET));
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            String[] permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
-            ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE);
-        }
+          if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                  ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+              String[] permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
+              ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE);
+          }
         ...
 ```
 
-## Configuration
+In `platforms/android/cordova/lib/config/GradlePropertiesParser.js` turned on useAndroidX:
 
-You can also configure the following variables to customize the iOS location plist entries
+```js
+'android.useAndroidX': 'true',
+'android.enableJetifier': 'true'
+```
 
--   `LOCATION_WHEN_IN_USE_DESCRIPTION` for `NSLocationWhenInUseUsageDescription` (defaults to "To get accurate GPS
-    locations")
--   `LOCATION_ALWAYS_USAGE_DESCRIPTION` for `NSLocationAlwaysUsageDescription` (defaults to "To get accurate GPS
-    locations")
+## Quick Testing
 
-Example using the Cordova CLI
+The **curbside-cordova** plugin also contains a **curbside-cordova-tests** plugin that can be used to quickly test if the **curbside-cordova** plugin is working properly and if the installation was done correctly. 
+
+### Create Cordova Test App And Install Plugins
+
+To do the testing you first needs to create a cordova application and install the required plugin as follows: 
 
 ```bash
-cordova plugin add curbside-cordova \
-    --variable LOCATION_WHEN_IN_USE_DESCRIPTION="My custom when in use message" \
-    --variable LOCATION_ALWAYS_USAGE_DESCRIPTION="My custom always usage message"
+cordova create mytestapp
+cd ./mytestapp
+cordova platform add android
+cordova platform add ios
+#Currently geolocation plugin and its test plugin are required because curbside-cordova plugin is not able to display the location authorization dialog (known issue).
+cordova plugin add cordova-plugin-geolocation
+cordova plugin add ./plugins/cordova-plugin-geolocation/tests
+#--------------------------
+
+cordova plugin add cordova-plugin-test-framework
+cordova plugin add curbside-cordova
+cordova plugin add ./plugins/curbside-cordova/tests
 ```
 
-Example using config.xml
+After that in [cordova-app-location]/config.xml you need to replace:
 
-```xml
-<plugin name="curbside-cordova" spec="3.0.0">
-    <variable name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="My custom when in use message" />
-    <variable name="LOCATION_ALWAYS_USAGE_DESCRIPTION" value="My custom always usage message" />
-</plugin>
+```html
+<content src="index.html" />
 ```
+by
+
+```html
+<content src="cdvtests/index.html" />
+```
+
+Finally follow the [Quick Install](#quick_install) to ensure Curbside-Cordova is working properly.
+
+Note that you can use your current Cordova application to do the testing. 
+
+
+### Running Automatic And Manual Tests
+
+The **curbside-cordova-tests** plugin contains automatic tests and manual tests. It is recommended to first run the automatic tests so that the **cordova-plugin-geolocation-tests** are run first thus triggering the location authorization dialog to prompt the user to give access to mobile device location. 
+
+![Image of iOS Location Authorization Dialog](./Location_Authorization_Dialog.png)
+
+It is important to allow the Cordova application to have access to location so that starting a curbside trip works successfully. 
+
+Once it is done the manual tests available in **curbside-cordova-tests** plugin can be tested. Those tests involve clicking on buttons to do such a thing as starting a curbside trip and completing/cancelling a trip or all opened trips.
+
 
 ## Quick Start
 
@@ -256,6 +293,13 @@ document.addEventListener("deviceready", function() {
    * Will be triggered when the user is near a site where the associate can be notified of the user arrival.
    **/
   Curbside.on("canNotifyMonitoringSessionUserAtSite", function(site){
+    // Do something
+  });
+
+  /**
+   * Will be triggered when an trip is started for a site.
+   **/
+  Curbside.on("tripStartedForSite", function(site){
     // Do something
   });
 

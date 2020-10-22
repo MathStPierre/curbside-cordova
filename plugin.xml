@@ -13,7 +13,7 @@
     <dependency id="cordova-promise-polyfill"></dependency>
     <!-- android -->
     <platform name="android">
-        <js-module src="www/plugin.js" name="plugin">
+        <js-module src="www/plugin.js" name="curbside">
             <runs/>
             <clobbers target="Curbside" />
         </js-module>
@@ -30,14 +30,21 @@
             </feature>
         </config-file>
         <source-file src="src/android/com/curbside/CurbsideCordovaPlugin.java" target-dir="src/com/curbside/" />
-        <framework src='com.curbside:sdk:3.2.4'  />
+        <framework src='com.curbside:sdk:3.4'  />
         <framework src='joda-time:joda-time:2.4'  />
+        <framework src='com.google.android.gms:play-services-analytics:17.0.0'  />
+        <framework src='com.google.android.gms:play-services-gcm:17.0.0'  />
+        <framework src='com.google.android.gms:play-services-location:17.0.0'  />
+        <framework src='com.google.android.gms:play-services-maps:17.0.0'  />
+        <framework src='com.google.firebase:firebase-core:17.0.0'  />
+        <framework src='com.google.firebase:firebase-messaging:17.0.0'  />
     </platform>
     <!-- ios -->
     <platform name="ios">
-        <preference name="LOCATION_WHEN_IN_USE_DESCRIPTION" default="To get accurate GPS locations"/>
-        <preference name="LOCATION_ALWAYS_USAGE_DESCRIPTION" default="To get accurate GPS locations" />
-        <js-module src="www/plugin.js" name="plugin">
+        <preference name="LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION" default="The app uses your location to help the store prepare for your arrival when you have an open order." />
+        <preference name="LOCATION_WHEN_IN_USE_DESCRIPTION" default="The app uses your location to help the store prepare for your arrival when you have an open order."/>
+        <preference name="LOCATION_USAGE_DESCRIPTION" default="The app uses your location to help the store prepare for your arrival when you have an open order." />
+        <js-module src="www/plugin.js" name="curbside">
             <runs/>
             <clobbers target="Curbside" />
         </js-module>
@@ -47,16 +54,16 @@
             </feature>
         </config-file>
         <config-file target="*-Info.plist" parent="NSLocationAlwaysAndWhenInUseUsageDescription">
-            <string>$LOCATION_ALWAYS_USAGE_DESCRIPTION</string>
+            <string>$LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION</string>
         </config-file>
         <config-file target="*-Info.plist" parent="NSLocationWhenInUseUsageDescription">
             <string>$LOCATION_WHEN_IN_USE_DESCRIPTION</string>
         </config-file>
-        <config-file target="*-Info.plist" parent="NSLocationAlwaysUsageDescription">
-            <string>$LOCATION_ALWAYS_USAGE_DESCRIPTION</string>
+        <config-file target="*-Info.plist" parent="NSLocationUsageDescription">
+            <string>$LOCATION_USAGE_DESCRIPTION</string>
         </config-file>
         <header-file src="src/ios/CurbsideCordovaPlugin.h" />
         <source-file src="src/ios/CurbsideCordovaPlugin.m" />
-        <framework src="Curbside" type="podspec" spec="~> 3.27" />
+        <framework src="Curbside" type="podspec" spec="~> 3.5.1" />
     </platform>
 </plugin>

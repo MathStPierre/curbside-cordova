@@ -346,6 +346,10 @@ BOOL userSessionInitializationErrorSkipped = false;
 - (void)session:(CSUserSession *)session canNotifyMonitoringSessionUserAtSite:(CSSite *)site {
     [self sendSuccessEvent:@"canNotifyMonitoringSessionUserAtSite" withResult:[self siteEncode:site]];
 }
+
+- (void)session:(CSUserSession *)session tripStartedForSite:(CSSite *)site {
+    [self sendSuccessEvent:@"tripStartedForSite" withResult:[self siteEncode:site]];
+}
     
 - (void)session:(CSUserSession *)session userApproachingSite:(CSSite *)site {
     [self sendSuccessEvent:@"userApproachingSite" withResult:[self siteEncode:site]];
@@ -354,7 +358,7 @@ BOOL userSessionInitializationErrorSkipped = false;
 - (void)session:(CSUserSession *)session userArrivedAtSite:(CSSite *)site {
     [self sendSuccessEvent:@"userArrivedAtSite" withResult:[self siteEncode:site]];
 }
-    
+  
 - (void)session:(CSUserSession *)session encounteredError:(NSError *)error forOperation:(CSUserSessionAction)customerSessionAction {
     CSSessionState monitoringSessionState = [CSMonitoringSession currentSession].sessionState;
     BOOL hasValidMonitoringSession = (monitoringSessionState == CSSessionStateValid || monitoringSessionState == CSSessionStateAuthenticated);
@@ -369,7 +373,6 @@ BOOL userSessionInitializationErrorSkipped = false;
 - (void)session:(CSUserSession *)session updatedTrackedSites:(NSSet<CSSite *> *)trackedSites {
     [self sendSuccessEvent:@"updatedTrackedSites" withResult:[self sitesEncode:trackedSites]];
 }
-    
     
 - (void)setUserInfo:(CDVInvokedUrlCommand*)command {
     NSDictionary* arguments = [command.arguments objectAtIndex:0];
