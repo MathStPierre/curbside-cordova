@@ -84,10 +84,9 @@ You can also configure the following variables to customize the iOS location pli
             <string>$LOCATION_USAGE_DESCRIPTION</string>
         </config-file>
       
--   `LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION` for `NSLocationAlwaysAndWhenInUseUsageDescription` (defaults to "To get accurate GPS
-    locations")
--   `LOCATION_WHEN_IN_USE_DESCRIPTION` for `NSLocationWhenInUseUsageDescription` (defaults to "To get accurate GPS locations")
--   `LOCATION_USAGE_DESCRIPTION` for `NSLocationUsageDescription` (defaults to "To get accurate GPS locations")
+-   `LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION` for `NSLocationAlwaysAndWhenInUseUsageDescription` (defaults to "The app uses your location to help the store prepare for your arrival when you have an open order.")
+-   `LOCATION_WHEN_IN_USE_DESCRIPTION` for `NSLocationWhenInUseUsageDescription` (defaults to "The app uses your location to help the store prepare for your arrival when you have an open order.")
+-   `LOCATION_USAGE_DESCRIPTION` for `NSLocationUsageDescription` (defaults to "The app uses your location to help the store prepare for your arrival when you have an open order.")
 
 
 Example using the Cordova CLI

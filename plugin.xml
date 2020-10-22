@@ -41,9 +41,9 @@
     </platform>
     <!-- ios -->
     <platform name="ios">
-        <preference name="LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION" default="To get accurate GPS locations" />
-        <preference name="LOCATION_WHEN_IN_USE_DESCRIPTION" default="To get accurate GPS locations"/>
-        <preference name="LOCATION_USAGE_DESCRIPTION" default="To get accurate GPS locations" />
+        <preference name="LOCATION_ALWAYS_AND_WHEN_IN_USE_USAGE_DESCRIPTION" default="The app uses your location to help the store prepare for your arrival when you have an open order." />
+        <preference name="LOCATION_WHEN_IN_USE_DESCRIPTION" default="The app uses your location to help the store prepare for your arrival when you have an open order."/>
+        <preference name="LOCATION_USAGE_DESCRIPTION" default="The app uses your location to help the store prepare for your arrival when you have an open order." />
         <js-module src="www/plugin.js" name="curbside">
             <runs/>
             <clobbers target="Curbside" />
