@@ -376,8 +376,12 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                     if (userSession != null) {
                         String siteID = this.getStringArg(args, 0);
                         String trackToken = this.getStringArg(args, 1);
+                        String tripType = null;
+                        if (args.length() == 3) {
+                            tripType = this.getStringArg(args, 2);
+                        }
                         listenNextEvent(userSession, Type.START_TRIP, callbackContext);
-                        userSession.startTripToSiteWithIdentifier(siteID, trackToken);
+                        userSession.startTripToSiteWithIdentifier(siteID, trackToken, tripType);
                     } else {
                         callbackContext.error("CSUserSession must be initialized");
                     }
