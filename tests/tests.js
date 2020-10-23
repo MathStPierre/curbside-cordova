@@ -99,6 +99,25 @@ exports.defineAutoTests = function () {
             //Avoid no expectation warning
             expect(null).toBeNull();
         });
+
+        it('startAndCompleteTripToSiteWithIdentifierAndTripType', function () {
+            createNewTrackingToken();
+
+            window.Curbside.startTripToSiteWithIdentifierAndType(destinationSiteId, trackingToken, "CSTripTypeCurbside")
+                .then(function () { })
+                .catch(function (error) {
+                    expect(error).toBeNull();
+                });
+
+            window.Curbside.completeTripToSiteWithIdentifier(destinationSiteId, trackingToken)
+                .then(function () { })
+                .catch(function (error) {
+                    expect(error).toBeNull();
+                })
+
+            //Avoid no expectation warning
+            expect(null).toBeNull();
+        });
     });
 };
 
@@ -120,9 +139,13 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         log.innerHTML = '';
     };
 
+    var tripType = "CSTripTypeDriveThru";
+
     var curbside_tests = '<h3>Press Start Trip button to start trip</h3>' +
         '<div id="start_trip"></div>' +
         'Expected result: Trip started for ' + destinationSiteId + ' site with no error' +
+        '<div id="start_trip_with_trip_type"></div>' +
+        'Expected result: Trip started for ' + destinationSiteId + ' site with trip type ' + tripType + ' with no error' +
         '<div id="complete_to_site_with_id"></div>' +
         'Expected result: Trip to ' + destinationSiteId + ' with tracking token marked as completed with no error' +
         '<div id="complete_all"></div>' +
@@ -165,6 +188,32 @@ exports.defineManualTests = function (contentEl, createActionButton) {
                 });
         },
         'start_trip'
+    );
+
+    createActionButton(
+        'Start Trip With Trip Type',
+        function () {
+            clearLog()
+            logMessage("Start Trip With Trip Type");
+
+            window.Curbside.setTrackingIdentifier(trackingId)
+                .then(function () { })
+                .catch(function (error) {
+                    logMessage('Error occured when calling setTrackingIdentifier : ' + error, 'red');
+                });
+
+            createNewTrackingToken();
+
+            window.Curbside.startTripToSiteWithIdentifierAndType(destinationSiteId, trackingToken, tripType)
+                .then(function () {
+                    logMessage('Successful startTripToSiteWithIdentifier call with tracking token ' + 
+                               trackingToken + ' and trip type ' + tripType, 'green');
+                })
+                .catch(function (error) {
+                    logMessage('Error occured when calling startTripToSiteWithIdentifier : ' + error, 'red');
+                });
+        },
+        'start_trip_with_trip_type'
     );
 
     createActionButton(
