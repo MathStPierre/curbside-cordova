@@ -266,7 +266,13 @@ by
 <content src="cdvtests/index.html" />
 ```
 
-Finally follow the [Quick Install](#quick_install) to ensure Curbside-Cordova is working properly.
+Finally follow the [Quick Install](#quick_install) to ensure Curbside-Cordova is working properly. 
+
+Note that when doing Android installation the package name in  mytestapp/platforms/android/app/google-services.json should be the following: 
+
+```json
+"package_name": "io.cordova.hellocordova"
+```
 
 Note that you can use your current Cordova application to do the testing. 
 
