@@ -25,6 +25,8 @@
 
 - (void)startUserOnTheirWayTripToSiteWithIdentifier:(CDVInvokedUrlCommand*)command;
 
+- (void)updateAllTripsWithUserOnTheirWay:(CDVInvokedUrlCommand*)command;
+
 - (void)completeTripToSiteWithIdentifier:(CDVInvokedUrlCommand*)command;
 
 - (void)completeAllTrips:(CDVInvokedUrlCommand*)command;

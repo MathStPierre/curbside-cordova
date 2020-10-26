@@ -148,7 +148,10 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         'Expected result: Trip started for ' + destinationSiteId + ' site with trip type ' + tripType + ' with no error' +
         '<div id="start_trip_on_their_way"></div>' +
         'Expected result:<br>- On iOS trip started for ' + destinationSiteId + ' site with trip type ' + tripType + ' with no error<br>' +
-        '- On Android error method not yet supported' +
+        '- On Android error method not supported' +
+        '<div id="update_all_trips_user_on_their_way"></div>' +
+        'Expected result:<br>- On iOS all trips updated with on their way to true with no error<br>' +
+        '- On Android error method not supported' +
         '<div id="complete_to_site_with_id"></div>' +
         'Expected result: Trip to ' + destinationSiteId + ' with tracking token marked as completed with no error' +
         '<div id="complete_all"></div>' +
@@ -161,7 +164,7 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     contentEl.innerHTML = '<div id="info"></div>' + curbside_tests;
 
     if (!areEventHandlersForManualTestSetup) {
-        let errorEventHandler = function (error) { logMessage("Start trip error : " + error, 'red'); };
+        let errorEventHandler = function (error) { logMessage("Error occurred : " + error, 'red'); };
         let tripStartedEventHandler = function (site) { logMessage("Trip started for site : " + site.siteIdentifier, 'green'); };
         window.Curbside.on("encounteredError", errorEventHandler);
         window.Curbside.on("tripStartedForSite", tripStartedEventHandler);
@@ -243,6 +246,31 @@ exports.defineManualTests = function (contentEl, createActionButton) {
                 });
         },
         'start_trip_on_their_way'
+    );
+
+    createActionButton(
+        'Update All Trips User On Their Way',
+        function () {
+            clearLog()
+            logMessage("Update All Trips User On Their Way");
+
+            window.Curbside.setTrackingIdentifier(trackingId)
+                .then(function () { })
+                .catch(function (error) {
+                    logMessage('Error occured when calling setTrackingIdentifier : ' + error, 'red');
+                });
+
+            createNewTrackingToken();
+
+            window.Curbside.updateAllTripsWithUserOnTheirWay(true)
+                .then(function () {
+                    logMessage('Successful updateAllTripsWithUserOnTheirWay call with userOnTheirWay set to true ', 'green');
+                })
+                .catch(function (error) {
+                    logMessage('Error occured when calling updateAllTripsWithUserOnTheirWay : ' + error, 'red');
+                });
+        },
+        'update_all_trips_user_on_their_way'
     );
 
     createActionButton(

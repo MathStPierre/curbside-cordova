@@ -377,6 +377,18 @@ document.addEventListener("deviceready", function() {
   });
 
   /**
+   * Start a trip tracking the user pickup of "UNIQUE_TRACK_TOKEN" to the site identified by the "SITE_ID". Call this
+   * method when the application thinks its appropriate to start tracking the user eg. Order is ready to be picked up at
+   * the site. This information is persisted across relaunch. toDate can be null.
+   *
+   * If an error occurs because of an invalid session state, permissions or authentication with the ARRIVE server,
+   * the callback will be informed with the reason as to why startTripToSiteWithIdentifier failed.
+   **/
+  Curbside.startTripToSiteWithIdentifierAndEta("SITE_ID", "UNIQUE_TRACK_TOKEN", fromDate, toDate, function(error){
+
+  });
+
+  /**
    * Start a trip tracking the user pickup of "UNIQUE_TRACK_TOKEN" to the site identified by the "SITE_ID". The TRIP_TYPE can be one of those values ; "CSTripTypeCarryOut", "CSTripTypeDriveThru", "CSTripTypeCurbside" or "CSTripTypeDineIn"
    * 
    * Call this
@@ -391,14 +403,14 @@ document.addEventListener("deviceready", function() {
   });
 
   /**
-   * Start a trip tracking the user pickup of "UNIQUE_TRACK_TOKEN" to the site identified by the "SITE_ID". Call this
-   * method when the application thinks its appropriate to start tracking the user eg. Order is ready to be picked up at
-   * the site. This information is persisted across relaunch. toDate can be null.
+   * Update userOnTheirWay parameter for all trips. Call this method * to explicitly tell the SDK that the user is on their way.
+   * 
+   * Note that you should use this method only when you know that the * user is on their way to the site, or to cancel the effect of the * previous call of this method. 
    *
    * If an error occurs because of an invalid session state, permissions or authentication with the ARRIVE server,
-   * the callback will be informed with the reason as to why startTripToSiteWithIdentifier failed.
+   * the callback will be informed with the reason as to why updateAllTripsWithUserOnTheirWay failed.
    **/
-  Curbside.startTripToSiteWithIdentifierAndEta("SITE_ID", "UNIQUE_TRACK_TOKEN", fromDate, toDate, function(error){
+  Curbside.updateAllTripsWithUserOnTheirWay(userOnTheirWay, function(error){
 
   });
 
@@ -548,8 +560,9 @@ All functions return a Promise as an alternative to a callback.
 -   setTrackingIdentifier
 -   startTripToSiteWithIdentifier
 -   startTripToSiteWithIdentifierAndType
--   startUserOnTheirWayTripToSiteWithIdentifier
 -   startTripToSiteWithIdentifierAndEta
+-   startUserOnTheirWayTripToSiteWithIdentifier 
+-   updateAllTripsWithUserOnTheirWay
 -   completeTripToSiteWithIdentifier
 -   completeAllTrips
 -   cancelTripToSiteWithIdentifier

@@ -426,6 +426,10 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                     callbackContext.error("startUserOnTheirWayTripToSiteWithIdentifier not available on Android");
                     break;
                 }
+                case "updateAllTripsWithUserOnTheirWay": {
+                    callbackContext.error("updateAllTripsWithUserOnTheirWay not available on Android");
+                    break;
+                }
                 case "completeTripToSiteWithIdentifier": {
                     CSUserSession userSession = CSUserSession.getInstance();
                     if (userSession != null) {

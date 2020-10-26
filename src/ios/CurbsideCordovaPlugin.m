@@ -16,8 +16,16 @@
 @implementation CurbsideCordovaPlugin
 
 BOOL userSessionInitializationErrorSkipped = false;
-
+    
 - (NSString*)getStringArg: (NSArray*)arguments at:(int)index{
+    id obj = [arguments objectAtIndex:index];
+    if(!obj || obj == [NSNull null]){
+        return nil;
+    }
+    return obj;
+}
+
+- (BOOL)getBoolArg: (NSArray*)arguments at:(int)index{
     id obj = [arguments objectAtIndex:index];
     if(!obj || obj == [NSNull null]){
         return nil;
@@ -450,10 +458,6 @@ BOOL userSessionInitializationErrorSkipped = false;
     
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
-    
-- (void)startUserOnTheirWayTripToSiteWithIdentifier:(CDVInvokedUrlCommand*)command {
-    [self startTripToSiteWithIdentifier:command onTheirWay:true];
-}
 
 - (void)startTripToSiteWithIdentifier:(CDVInvokedUrlCommand*)command {
     [self startTripToSiteWithIdentifier:command onTheirWay:false];
@@ -481,6 +485,25 @@ BOOL userSessionInitializationErrorSkipped = false;
         [session startTripToSiteWithIdentifier:siteID trackToken:trackToken etaFromDate:fromDate toDate:toDate];
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     }
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)startUserOnTheirWayTripToSiteWithIdentifier:(CDVInvokedUrlCommand*)command {
+[self startTripToSiteWithIdentifier:command onTheirWay:true];
+}
+
+- (void)updateAllTripsWithUserOnTheirWay:(CDVInvokedUrlCommand*)command {
+    CDVPluginResult* pluginResult;
+    BOOL userOnTheirWay = [self getBoolArg:command.arguments at:0];
+
+    CSUserSession* session = [CSUserSession currentSession];
+    if (session.trackingIdentifier == nil) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"trackingIdentifier was null"];
+    } else {
+        [session updateAllTripsWithUserOnTheirWay:userOnTheirWay];
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    }
+
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
     
