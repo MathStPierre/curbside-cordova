@@ -460,7 +460,7 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                     if (userSession != null) {
                         Object trackedSites = userSession.getTrackedSites();
                         if (trackedSites != null) {
-                            callbackContext.success((JSONObject) jsonEncode(trackedSites));
+                            callbackContext.success((JSONArray) jsonEncode(trackedSites));
                         } else {
                             callbackContext.success(new JSONArray());
                         }
