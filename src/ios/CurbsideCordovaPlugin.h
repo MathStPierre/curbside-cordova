@@ -23,6 +23,8 @@
 
 - (void)startTripToSiteWithIdentifierAndEta:(CDVInvokedUrlCommand*)command;
 
+- (void)startUserOnTheirWayTripToSiteWithIdentifier:(CDVInvokedUrlCommand*)command;
+
 - (void)completeTripToSiteWithIdentifier:(CDVInvokedUrlCommand*)command;
 
 - (void)completeAllTrips:(CDVInvokedUrlCommand*)command;

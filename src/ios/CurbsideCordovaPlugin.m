@@ -397,14 +397,14 @@ BOOL userSessionInitializationErrorSkipped = false;
     
     session.userInfo = userInfo;
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-}    
-    
-    
-- (void)startTripToSiteWithIdentifier:(CDVInvokedUrlCommand*)command {
+}  
+
+- (void)startTripToSiteWithIdentifier:(CDVInvokedUrlCommand*)command onTheirWay:(BOOL)onTheirWay {
     CDVPluginResult* pluginResult;
     NSString* siteID = [self getStringArg:command.arguments at:0];
     NSString* trackToken = [self getStringArg:command.arguments at:1];
-    
+    NSString* tripType = [self getStringArg:command.arguments at:2];
+   
     CSUserSession* session = [CSUserSession currentSession];
     if (siteID == nil) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"siteID was null"];
@@ -434,9 +434,18 @@ BOOL userSessionInitializationErrorSkipped = false;
         [session startTripToSiteWithIdentifier:siteID trackToken:trackToken];
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     }
+    
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
     
+- (void)startUserOnTheirWayTripToSiteWithIdentifier:(CDVInvokedUrlCommand*)command {
+    [self startTripToSiteWithIdentifier:command onTheirWay:true];
+}
+
+- (void)startTripToSiteWithIdentifier:(CDVInvokedUrlCommand*)command {
+    [self startTripToSiteWithIdentifier:command onTheirWay:false];
+}
+   
 -(void)startTripToSiteWithIdentifierAndEta:(CDVInvokedUrlCommand*)command {
     CDVPluginResult* pluginResult;
     NSString* siteID = [self getStringArg:command.arguments at:0];
