@@ -413,19 +413,32 @@ BOOL userSessionInitializationErrorSkipped = false;
     } else if (session.trackingIdentifier == nil) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"trackingIdentifier was null"];
     } else if (tripType != nil) {
-        if (![tripType isEqualToString:@"CSTripTypeCarryOut"] && 
-            ![tripType isEqualToString:@"CSTripTypeDriveThru"] &&
-            ![tripType isEqualToString:@"CSTripTypeCurbside"] &&
-            ![tripType isEqualToString:@"CSTripTypeDineIn"]) {
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"invalid tripType value"];
+        
+        NSString* tripTypeVal = nil;
+            
+        if ([tripType isEqualToString:@"CSTripTypeCarryOut"]) {
+            tripTypeVal = CSTripTypeCarryOut;
+        }
+        else if ([tripType isEqualToString:@"CSTripTypeDriveThru"]) {
+            tripTypeVal = CSTripTypeDriveThru;
+        }
+        else if ([tripType isEqualToString:@"CSTripTypeCurbside"]) {
+            tripTypeVal = CSTripTypeCurbside;
+        }
+        else if ([tripType isEqualToString:@"CSTripTypeDineIn"]) {
+            tripTypeVal = CSTripTypeDineIn;
         }
         else {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"invalid tripType value"];
+        }
+           
+        if (tripTypeVal != nil) {
             if (onTheirWay) {
-                [session startUserOnTheirWayTripToSiteWithIdentifier:siteID trackToken:trackToken tripType:tripType];
+                [session startUserOnTheirWayTripToSiteWithIdentifier:siteID trackToken:trackToken tripType:tripTypeVal];
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
             }
             else {
-                [session startTripToSiteWithIdentifier:siteID trackToken:trackToken tripType:tripType];
+                [session startTripToSiteWithIdentifier:siteID trackToken:trackToken tripType:tripTypeVal];
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
             }  
         }
