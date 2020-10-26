@@ -422,6 +422,10 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                     }
                     break;
                 }
+                case "startUserOnTheirWayTripToSiteWithIdentifier": {
+                    callbackContext.error("startUserOnTheirWayTripToSiteWithIdentifier not available on Android");
+                    break;
+                }
                 case "completeTripToSiteWithIdentifier": {
                     CSUserSession userSession = CSUserSession.getInstance();
                     if (userSession != null) {
