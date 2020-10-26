@@ -6,6 +6,7 @@ import android.location.Location;
 
 import com.curbside.sdk.CSMonitoringSession;
 import com.curbside.sdk.CSMotionActivity;
+import com.curbside.sdk.CSConstants;
 import com.curbside.sdk.CSSession;
 import com.curbside.sdk.CSSite;
 import com.curbside.sdk.CSTransportationMode;
@@ -377,8 +378,26 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                         String siteID = this.getStringArg(args, 0);
                         String trackToken = this.getStringArg(args, 1);
                         String tripType = null;
+
                         if (args.length() == 3) {
-                            tripType = this.getStringArg(args, 2);
+                            String tripTypeArg = this.getStringArg(args, 2);
+
+                            if (tripTypeArg.compareTo("CSTripTypeCarryOut") == 0) {
+                                tripType = CSConstants.CSTripTypeCarryOut;
+                            }
+                            else if (tripTypeArg.compareTo("CSTripTypeDriveThru") == 0) {
+                                tripType = CSConstants.CSTripTypeDriveThru;
+                            }
+                            else if (tripTypeArg.compareTo("CSTripTypeCurbside") == 0) {
+                                tripType = CSConstants.CSTripTypeCurbside;
+                            }
+                            else if (tripTypeArg.compareTo("CSTripTypeDineIn") == 0) {
+                                tripType = CSConstants.CSTripTypeDineIn;
+                            }
+                            else {
+                                callbackContext.error("Invalid tripType");
+                                break;
+                            }
                         }
                         listenNextEvent(userSession, Type.START_TRIP, callbackContext);
                         userSession.startTripToSiteWithIdentifier(siteID, trackToken, tripType);
