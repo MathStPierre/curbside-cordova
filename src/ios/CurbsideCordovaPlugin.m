@@ -412,7 +412,25 @@ BOOL userSessionInitializationErrorSkipped = false;
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"trackToken was null"];
     } else if (session.trackingIdentifier == nil) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"trackingIdentifier was null"];
-    } else {
+    } else if (tripType != nil) {
+        if (![tripType isEqualToString:@"CSTripTypeCarryOut"] && 
+            ![tripType isEqualToString:@"CSTripTypeDriveThru"] &&
+            ![tripType isEqualToString:@"CSTripTypeCurbside"] &&
+            ![tripType isEqualToString:@"CSTripTypeDineIn"]) {
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"invalid tripType value"];
+        }
+        else {
+            if (onTheirWay) {
+                [session startUserOnTheirWayTripToSiteWithIdentifier:siteID trackToken:trackToken tripType:tripType];
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+            }
+            else {
+                [session startTripToSiteWithIdentifier:siteID trackToken:trackToken tripType:tripType];
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+            }  
+        }
+    }
+    else {
         [session startTripToSiteWithIdentifier:siteID trackToken:trackToken];
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     }
