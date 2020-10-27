@@ -497,7 +497,7 @@ BOOL userSessionInitializationErrorSkipped = false;
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"invalid tripType value"];
     } else {
         NSDate *fromDate = [self dateForRFC3339DateTimeString:from];
-        NSDate *toDate = nil 
+        NSDate *toDate = nil; 
         if (to != nil) {
             toDate = [self dateForRFC3339DateTimeString:to];
         }
@@ -667,5 +667,28 @@ BOOL userSessionInitializationErrorSkipped = false;
     }
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
+
+
+- (void)notifyMonitoringSessionUserOfArrivalAtSite:(CDVInvokedUrlCommand*)command {
+    CDVPluginResult* pluginResult;
+    NSString* siteID = [self getStringArg:command.arguments at:0];
+    
+    CSUserSession* session = [CSUserSession currentSession];
+    if(session == nil){
+        [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"CSSession must be initialized"] callbackId:command.callbackId];
+    } else if (siteID == nil) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"siteID was null"];    
+    } else if (session.trackingIdentifier == nil) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"trackingIdentifier was null"];
+    }
+    else {
+        CSSite* site = [[CSSite alloc] initWithSiteIdentifier:siteID];
+        [session notifyMonitoringSessionUserOfArrivalAtSite:site];
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    }      
+    
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
 
 @end

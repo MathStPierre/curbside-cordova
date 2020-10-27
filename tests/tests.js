@@ -151,11 +151,12 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         'Expected result: Trip started for ' + destinationSiteId + ' site with trip type ' + tripType + ' with no error' +
         '<div id="start_trip_with_trip_eta_type"></div>' +
         'Expected result: Trip started for ' + destinationSiteId + ' site with ETA window between ' + fromDate + ' to ' + toDate +  
-        ' and trip type ' + tripType + 
-        ' with no error' +
+        ' and trip type ' + tripType + ' with no error' +
         '<div id="start_trip_on_their_way"></div>' +
         'Expected result:<br>- On iOS trip started for ' + destinationSiteId + ' site with trip type ' + tripType + ' with no error<br>' +
         '- On Android error method not supported' +
+        '<div id="notify_user_arrival_at_site"></div>' +
+        'Expected result: Monitoring session notify for trips arrival at ' + destinationSiteId + ' site with no error' +
         '<div id="update_all_trips_user_on_their_way"></div>' +
         'Expected result:<br>- On iOS all trips updated with on their way to true with no error<br>' +
         '- On Android error method not supported' +
@@ -285,6 +286,29 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     );
 
     createActionButton(
+        'Notify Monitoring Session User Of Arrival At Site',
+        function () {
+            clearLog()
+            logMessage("Notify Monitoring Session User Of Arrival At Site");
+
+            window.Curbside.setTrackingIdentifier(trackingId)
+                .then(function () { })
+                .catch(function (error) {
+                    logMessage('Error occured when calling setTrackingIdentifier : ' + error, 'red');
+                });
+
+            window.Curbside.notifyMonitoringSessionUserOfArrivalAtSite(destinationSiteId)
+                .then(function () {
+                    logMessage('Successful notifyMonitoringSessionUserOfArrivalAtSite call for site id ' + destinationSiteId, 'green');
+                })
+                .catch(function (error) {
+                    logMessage('Error occured when calling notifyMonitoringSessionUserOfArrivalAtSite : ' + error, 'red');
+                });
+        },
+        'notify_user_arrival_at_site'
+    );
+
+    createActionButton(
         'Update All Trips User On Their Way',
         function () {
             clearLog()
@@ -295,8 +319,6 @@ exports.defineManualTests = function (contentEl, createActionButton) {
                 .catch(function (error) {
                     logMessage('Error occured when calling setTrackingIdentifier : ' + error, 'red');
                 });
-
-            createNewTrackingToken();
 
             window.Curbside.updateAllTripsWithUserOnTheirWay(true)
                 .then(function () {

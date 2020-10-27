@@ -112,6 +112,10 @@ var Curbside = {
         return execCb("stopMonitoringArrivals", cb);
     },
 
+    notifyMonitoringSessionUserOfArrivalAtSite: function(siteId, cb) {
+        return execCb("notifyMonitoringSessionUserOfArrivalAtSite", cb, siteId);
+    },
+
     on: function(event, listener) {
         initEventListener();
         if (!(event in eventListeners)) {

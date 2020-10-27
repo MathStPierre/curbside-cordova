@@ -607,6 +607,17 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                     }
                     break;
                 }
+                case "notifyMonitoringSessionUserOfArrivalAtSite": {
+                    CSUserSession userSession = CSUserSession.getInstance();
+                    if (userSession != null) {
+                        String siteID = this.getStringArg(args, 0);
+                        CSSite site = new CSSite(siteID);
+                        userSession.notifyMonitoringSessionUserOfArrivalAtSite(site);
+                    } else {
+                        callbackContext.error("CSSession must be initialized");                        
+                    }                                        
+                break;
+                }
                 default:
                     callbackContext.error("invalid action:" + action);
                     break;
