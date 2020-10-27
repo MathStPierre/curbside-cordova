@@ -497,7 +497,10 @@ BOOL userSessionInitializationErrorSkipped = false;
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"invalid tripType value"];
     } else {
         NSDate *fromDate = [self dateForRFC3339DateTimeString:from];
-        NSDate *toDate = [self dateForRFC3339DateTimeString:to];
+        NSDate *toDate = nil 
+        if (to != nil) {
+            toDate = [self dateForRFC3339DateTimeString:to];
+        }
         if (tripType == nil) {
             [session startTripToSiteWithIdentifier:siteID trackToken:trackToken etaFromDate:fromDate toDate:toDate];
         }
