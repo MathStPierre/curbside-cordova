@@ -44,16 +44,20 @@ var Curbside = {
         return execCb("setUserInfo", cb, userInfo);
     },
 
-    startTripToSiteWithIdentifierAndType: function(siteID, trackToken, tripType, cb) {
-        return execCb("startTripToSiteWithIdentifier", cb, siteID, trackToken, tripType);
-    },
-
     startTripToSiteWithIdentifier: function(siteID, trackToken, cb) {
         return execCb("startTripToSiteWithIdentifier", cb, siteID, trackToken, null);
     },
 
+    startTripToSiteWithIdentifierAndType: function(siteID, trackToken, tripType, cb) {
+        return execCb("startTripToSiteWithIdentifier", cb, siteID, trackToken, tripType);
+    },
+
     startTripToSiteWithIdentifierAndEta: function(siteID, trackToken, fromDate, toDate, cb) {
-        return execCb("startTripToSiteWithIdentifierAndEta", cb, siteID, trackToken, fromDate, toDate);
+        return execCb("startTripToSiteWithIdentifierAndEta", cb, siteID, trackToken, fromDate, toDate, null);
+    },
+
+    startTripToSiteWithIdentifierAndEtaAndType: function(siteID, trackToken, fromDate, toDate, tripType, cb) {
+        return execCb("startTripToSiteWithIdentifierAndEta", cb, siteID, trackToken, fromDate, toDate, tripType);
     },
 
     startUserOnTheirWayTripToSiteWithIdentifier: function(siteID, trackToken, tripType, cb) {

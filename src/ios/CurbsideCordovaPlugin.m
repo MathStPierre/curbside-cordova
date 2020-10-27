@@ -66,6 +66,26 @@ BOOL userSessionInitializationErrorSkipped = false;
     return [[CLLocation alloc] initWithCoordinate:coordinate altitude:[altitude doubleValue] horizontalAccuracy:[horizontalAccuracy doubleValue] verticalAccuracy:[verticalAccuracy doubleValue] course:[course doubleValue] speed:[speed doubleValue] timestamp:timestamp];
 }
 
+- (NSString*)getTripType:(NSString*)tripTypeArg {
+ 
+    NSString* tripType = nil;
+
+    if ([tripTypeArg isEqualToString:@"CSTripTypeCarryOut"]) {
+        tripType = CSTripTypeCarryOut;
+    }
+    else if ([tripTypeArg isEqualToString:@"CSTripTypeDriveThru"]) {
+        tripType = CSTripTypeDriveThru;
+    }
+    else if ([tripTypeArg isEqualToString:@"CSTripTypeCurbside"]) {
+        tripType = CSTripTypeCurbside;
+    }
+    else if ([tripTypeArg isEqualToString:@"CSTripTypeDineIn"]) {
+        tripType = CSTripTypeDineIn;
+    }
+
+    return tripType;
+}
+
 - (void)pluginInitialize {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(finishLaunching:) name:UIApplicationDidFinishLaunchingNotification object:nil];
     _pendingEventResults = [[NSMutableArray alloc] init];
@@ -411,7 +431,12 @@ BOOL userSessionInitializationErrorSkipped = false;
     CDVPluginResult* pluginResult;
     NSString* siteID = [self getStringArg:command.arguments at:0];
     NSString* trackToken = [self getStringArg:command.arguments at:1];
-    NSString* tripType = [self getStringArg:command.arguments at:2];
+    NSString* tripTypeArg = [self getStringArg:command.arguments at:2];
+    NSString* tripType = nil;
+
+    if (tripTypeArg != nil) {
+        tripType = [self getTripType:tripTypeArg];
+    }
    
     CSUserSession* session = [CSUserSession currentSession];
     if (siteID == nil) {
@@ -420,36 +445,19 @@ BOOL userSessionInitializationErrorSkipped = false;
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"trackToken was null"];
     } else if (session.trackingIdentifier == nil) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"trackingIdentifier was null"];
-    } else if (tripType != nil) {
-        
-        NSString* tripTypeVal = nil;
-            
-        if ([tripType isEqualToString:@"CSTripTypeCarryOut"]) {
-            tripTypeVal = CSTripTypeCarryOut;
-        }
-        else if ([tripType isEqualToString:@"CSTripTypeDriveThru"]) {
-            tripTypeVal = CSTripTypeDriveThru;
-        }
-        else if ([tripType isEqualToString:@"CSTripTypeCurbside"]) {
-            tripTypeVal = CSTripTypeCurbside;
-        }
-        else if ([tripType isEqualToString:@"CSTripTypeDineIn"]) {
-            tripTypeVal = CSTripTypeDineIn;
+    } else if (tripTypeArg != nil && tripType == nil) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"invalid tripType value"];
+    }
+    else       
+    if (tripType != nil) {
+        if (onTheirWay) {
+            [session startUserOnTheirWayTripToSiteWithIdentifier:siteID trackToken:trackToken tripType:tripType];
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         }
         else {
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"invalid tripType value"];
-        }
-           
-        if (tripTypeVal != nil) {
-            if (onTheirWay) {
-                [session startUserOnTheirWayTripToSiteWithIdentifier:siteID trackToken:trackToken tripType:tripTypeVal];
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-            }
-            else {
-                [session startTripToSiteWithIdentifier:siteID trackToken:trackToken tripType:tripTypeVal];
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-            }  
-        }
+            [session startTripToSiteWithIdentifier:siteID trackToken:trackToken tripType:tripType];
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        }  
     }
     else {
         [session startTripToSiteWithIdentifier:siteID trackToken:trackToken];
@@ -469,6 +477,12 @@ BOOL userSessionInitializationErrorSkipped = false;
     NSString* trackToken = [self getStringArg:command.arguments at:1];
     NSString* from = [self getStringArg:command.arguments at:2];
     NSString* to = [self getStringArg:command.arguments at:3];
+    NSString* tripTypeArg = [self getStringArg:command.arguments at:4];
+    NSString* tripType = nil;
+
+    if (tripTypeArg != nil) {
+        tripType = [self getTripType:tripTypeArg];
+    }
     
     CSUserSession* session = [CSUserSession currentSession];
     if (siteID == nil) {
@@ -479,24 +493,32 @@ BOOL userSessionInitializationErrorSkipped = false;
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"from was null"];
     } else if (session.trackingIdentifier == nil) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"trackingIdentifier was null"];
+    } else if (tripTypeArg != nil && tripType == nil) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"invalid tripType value"];
     } else {
         NSDate *fromDate = [self dateForRFC3339DateTimeString:from];
         NSDate *toDate = [self dateForRFC3339DateTimeString:to];
-        [session startTripToSiteWithIdentifier:siteID trackToken:trackToken etaFromDate:fromDate toDate:toDate];
+        if (tripType == nil) {
+            [session startTripToSiteWithIdentifier:siteID trackToken:trackToken etaFromDate:fromDate toDate:toDate];
+        }
+        else {
+            [session startTripToSiteWithIdentifier:siteID trackToken:trackToken etaFromDate:fromDate toDate:toDate tripType:tripType];
+        }
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     }
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 - (void)startUserOnTheirWayTripToSiteWithIdentifier:(CDVInvokedUrlCommand*)command {
-[self startTripToSiteWithIdentifier:command onTheirWay:true];
+    [self startTripToSiteWithIdentifier:command onTheirWay:true];
 }
 
 - (void)updateAllTripsWithUserOnTheirWay:(CDVInvokedUrlCommand*)command {
     CDVPluginResult* pluginResult;
-    BOOL userOnTheirWay = [self getBoolArg:command.arguments at:0];
-
+    BOOL userOnTheirWay = [self getBoolArg:command.arguments at:0]; 
+   
     CSUserSession* session = [CSUserSession currentSession];
+   
     if (session.trackingIdentifier == nil) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"trackingIdentifier was null"];
     } else {
@@ -506,7 +528,7 @@ BOOL userSessionInitializationErrorSkipped = false;
 
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
-    
+ 
 - (void)completeTripToSiteWithIdentifier:(CDVInvokedUrlCommand*)command {
     CDVPluginResult* pluginResult;
     NSString* siteID = [self getStringArg:command.arguments at:0];

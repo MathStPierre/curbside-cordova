@@ -128,6 +128,26 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
         return location;
     }
 
+    private String getTripTypeConstant(String tripTypeArg) {
+
+        String tripType = null;
+
+        if (tripTypeArg.compareTo("CSTripTypeCarryOut") == 0) {
+            tripType = CSConstants.CSTripTypeCarryOut;
+        }
+        else if (tripTypeArg.compareTo("CSTripTypeDriveThru") == 0) {
+            tripType = CSConstants.CSTripTypeDriveThru;
+        }
+        else if (tripTypeArg.compareTo("CSTripTypeCurbside") == 0) {
+            tripType = CSConstants.CSTripTypeCurbside;
+        }
+        else if (tripTypeArg.compareTo("CSTripTypeDineIn") == 0) {
+            tripType = CSConstants.CSTripTypeDineIn;
+        }
+
+        return tripType;
+    }
+    
     private Object jsonEncode(Object object) throws JSONException {
         if (object instanceof Collection) {
             JSONArray result = new JSONArray();
@@ -379,23 +399,12 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                         String trackToken = this.getStringArg(args, 1);
                         String tripType = null;
 
-                        if (args.length() == 3) {
+                        if (args.length() >= 3) {
                             String tripTypeArg = this.getStringArg(args, 2);
 
-                            if (tripTypeArg.compareTo("CSTripTypeCarryOut") == 0) {
-                                tripType = CSConstants.CSTripTypeCarryOut;
-                            }
-                            else if (tripTypeArg.compareTo("CSTripTypeDriveThru") == 0) {
-                                tripType = CSConstants.CSTripTypeDriveThru;
-                            }
-                            else if (tripTypeArg.compareTo("CSTripTypeCurbside") == 0) {
-                                tripType = CSConstants.CSTripTypeCurbside;
-                            }
-                            else if (tripTypeArg.compareTo("CSTripTypeDineIn") == 0) {
-                                tripType = CSConstants.CSTripTypeDineIn;
-                            }
-                            else {
-                                callbackContext.error("Invalid tripType");
+                            tripType = getTripTypeConstant(tripTypeArg);
+                            if (tripType == null) {
+                                callbackContext.error("Invalid tripType argument");
                                 break;
                             }
                         }
@@ -413,10 +422,22 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                         String trackToken = this.getStringArg(args, 1);
                         String from = this.getStringArg(args, 2);
                         String to = this.getStringArg(args, 3);
+                        String tripType = null;
+
+                        if (args.length() >= 5) {
+                            String tripTypeArg = this.getStringArg(args, 4);
+
+                            tripType = getTripTypeConstant(tripTypeArg);
+                            if (tripType == null) {
+                                callbackContext.error("Invalid tripType argument");
+                                break;
+                            }
+                        }
+
                         listenNextEvent(userSession, Type.START_TRIP, callbackContext);
                         DateTime dtFrom = DateTime.parse(from);
                         DateTime dtTo = to == null ? null : DateTime.parse(to);
-                        userSession.startTripToSiteWithIdentifierAndETA(siteID, trackToken, dtFrom, dtTo);
+                        userSession.startTripToSiteWithIdentifierAndETA(siteID, trackToken, dtFrom, dtTo, tripType);
                     } else {
                         callbackContext.error("CSUserSession must be initialized");
                     }

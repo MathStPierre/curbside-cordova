@@ -377,7 +377,7 @@ document.addEventListener("deviceready", function() {
   });
 
   /**
-   * Start a trip tracking the user pickup of "UNIQUE_TRACK_TOKEN" to the site identified by the "SITE_ID". Call this
+   * Start a trip tracking the user pickup of "UNIQUE_TRACK_TOKEN" to the site identified by the "SITE_ID" for an time window when the user is expected to do the pickup. Call this
    * method when the application thinks its appropriate to start tracking the user eg. Order is ready to be picked up at
    * the site. This information is persisted across relaunch. toDate can be null.
    *
@@ -385,6 +385,19 @@ document.addEventListener("deviceready", function() {
    * the callback will be informed with the reason as to why startTripToSiteWithIdentifier failed.
    **/
   Curbside.startTripToSiteWithIdentifierAndEta("SITE_ID", "UNIQUE_TRACK_TOKEN", fromDate, toDate, function(error){
+
+  });
+
+
+  /**
+   * Start a trip tracking the user pickup of "UNIQUE_TRACK_TOKEN" to the site identified by the "SITE_ID" for an time window when the user is expected to do the pickup. The TRIP_TYPE can be one of those values ; "CSTripTypeCarryOut", "CSTripTypeDriveThru", "CSTripTypeCurbside" or "CSTripTypeDineIn". Call this
+   * method when the application thinks its appropriate to start tracking the user eg. Order is ready to be picked up at
+   * the site. This information is persisted across relaunch. toDate can be null.
+   *
+   * If an error occurs because of an invalid session state, permissions or authentication with the ARRIVE server,
+   * the callback will be informed with the reason as to why startTripToSiteWithIdentifier failed.
+   **/
+  Curbside.startTripToSiteWithIdentifierAndEtaAndType("SITE_ID", "UNIQUE_TRACK_TOKEN", fromDate, toDate, tripType, function(error){
 
   });
 
@@ -561,6 +574,7 @@ All functions return a Promise as an alternative to a callback.
 -   startTripToSiteWithIdentifier
 -   startTripToSiteWithIdentifierAndType
 -   startTripToSiteWithIdentifierAndEta
+-   startTripToSiteWithIdentifierAndEtaAndType
 -   startUserOnTheirWayTripToSiteWithIdentifier 
 -   updateAllTripsWithUserOnTheirWay
 -   completeTripToSiteWithIdentifier

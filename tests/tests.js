@@ -140,12 +140,19 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     };
 
     var tripType = "CSTripTypeDriveThru";
+    var fromDate = new Date(); // for now
+    var toDate = new Date(fromDate);
+    toDate.setDate(fromDate.getDate() + 3); // in 3 days from now
 
     var curbside_tests = '<h3>Press Start Trip button to start trip</h3>' +
         '<div id="start_trip"></div>' +
         'Expected result: Trip started for ' + destinationSiteId + ' site with no error' +
         '<div id="start_trip_with_trip_type"></div>' +
         'Expected result: Trip started for ' + destinationSiteId + ' site with trip type ' + tripType + ' with no error' +
+        '<div id="start_trip_with_trip_eta_type"></div>' +
+        'Expected result: Trip started for ' + destinationSiteId + ' site with ETA window between ' + fromDate + ' to ' + toDate +  
+        ' and trip type ' + tripType + 
+        ' with no error' +
         '<div id="start_trip_on_their_way"></div>' +
         'Expected result:<br>- On iOS trip started for ' + destinationSiteId + ' site with trip type ' + tripType + ' with no error<br>' +
         '- On Android error method not supported' +
@@ -220,6 +227,35 @@ exports.defineManualTests = function (contentEl, createActionButton) {
                 });
         },
         'start_trip_with_trip_type'
+    );
+
+    createActionButton(
+        'Start Trip With Eta And Trip Type',
+        function () {
+            clearLog()
+            logMessage("Start Trip With Eta And Trip Type");
+
+            window.Curbside.setTrackingIdentifier(trackingId)
+                .then(function () { })
+                .catch(function (error) {
+                    logMessage('Error occured when calling setTrackingIdentifier : ' + error, 'red');
+                });
+
+            createNewTrackingToken();
+
+            // var fromDate = new Date(); // for now
+            // var toDate = new Date(fromDate).setDate(fromDate.getDate() + 3);
+
+            window.Curbside.startTripToSiteWithIdentifierAndEtaAndType(destinationSiteId, trackingToken, fromDate, toDate, tripType)
+                .then(function () {
+                    logMessage('Successful startTripToSiteWithIdentifierAndEtaAndType call with tracking token ' + 
+                               trackingToken + ' and trip type ' + tripType, 'green');
+                })
+                .catch(function (error) {
+                    logMessage('Error occured when calling startTripToSiteWithIdentifierAndEtaAndType : ' + error, 'red');
+                });
+        },
+        'start_trip_with_trip_eta_type'
     );
 
     createActionButton(
