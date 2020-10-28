@@ -45,7 +45,7 @@ var Curbside = {
     },
 
     startTripToSiteWithIdentifier: function(siteID, trackToken, cb) {
-        return execCb("startTripToSiteWithIdentifier", cb, siteID, trackToken, null);
+        return execCb("startTripToSiteWithIdentifier", cb, siteID, trackToken);
     },
 
     startTripToSiteWithIdentifierAndType: function(siteID, trackToken, tripType, cb) {
@@ -53,7 +53,7 @@ var Curbside = {
     },
 
     startTripToSiteWithIdentifierAndEta: function(siteID, trackToken, fromDate, toDate, cb) {
-        return execCb("startTripToSiteWithIdentifierAndEta", cb, siteID, trackToken, fromDate, toDate, null);
+        return execCb("startTripToSiteWithIdentifierAndEta", cb, siteID, trackToken, fromDate, toDate);
     },
 
     startTripToSiteWithIdentifierAndEtaAndType: function(siteID, trackToken, fromDate, toDate, tripType, cb) {

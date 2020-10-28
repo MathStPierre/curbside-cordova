@@ -18,6 +18,9 @@
 BOOL userSessionInitializationErrorSkipped = false;
     
 - (NSString*)getStringArg: (NSArray*)arguments at:(int)index{
+    if(index >= arguments.count) {
+        return nil;
+    }
     id obj = [arguments objectAtIndex:index];
     if(!obj || obj == [NSNull null]){
         return nil;
@@ -26,6 +29,9 @@ BOOL userSessionInitializationErrorSkipped = false;
 }
 
 - (BOOL)getBoolArg: (NSArray*)arguments at:(int)index{
+    if(index >= arguments.count) {
+        return nil;
+    }
     id obj = [arguments objectAtIndex:index];
     if(!obj || obj == [NSNull null]){
         return nil;
@@ -34,6 +40,9 @@ BOOL userSessionInitializationErrorSkipped = false;
 }
 
 - (NSArray<NSString *> *)getArrayArg: (NSArray*)arguments at:(int)index{
+    if(index >= arguments.count) {
+        return nil;
+    }
     id obj = [arguments objectAtIndex:index];
     if(!obj || obj == [NSNull null]){
         return nil;
@@ -42,6 +51,9 @@ BOOL userSessionInitializationErrorSkipped = false;
 }
 
 - (CLLocation *)getLocationArg:(NSArray*)arguments at:(int)index{
+    if(index >= arguments.count) {
+        return nil;
+    }
     id obj = [arguments objectAtIndex:index];
 
     if(!obj || obj == [NSNull null] || ![obj isKindOfClass:[NSDictionary class]]){
