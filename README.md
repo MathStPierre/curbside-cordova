@@ -511,7 +511,7 @@ document.addEventListener("deviceready", function() {
      * If an error occurs because of an invalid session state, permissions or authentication with the ARRIVE server,
      * the callback will be informed with the reason as to why notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens failed.
      **/
-  Curbside.notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens("SITE_ID", trackTokens, function(error){
+  Curbside.notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens("SITE_ID", ["UNIQUE_TRACK_TOKEN_1", "UNIQUE_TRACK_TOKEN_2"], function(error){
 
   });
 
