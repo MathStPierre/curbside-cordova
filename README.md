@@ -515,7 +515,14 @@ document.addEventListener("deviceready", function() {
 
   });
 
-  
+ /**
+     * Returns the set of siteIdentifiers for which canNotifyMonitoringSessionUser is true
+     **/
+  Curbside.getSitesToNotifyMonitoringSessionUserOfArrival(function(error, sites){
+
+  });
+
+  });
 
 </script>
 ```
@@ -607,6 +614,8 @@ All functions return a Promise as an alternative to a callback.
 -   getTrackedSites
 -   getEtaToSiteWithIdentifier
 -   notifyMonitoringSessionUserOfArrivalAtSite
+-   notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens
+-   getSitesToNotifyMonitoringSessionUserOfArrival
 
 The Promise can be used like this:
 

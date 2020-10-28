@@ -159,6 +159,8 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         'Expected result: Notify monitoring session for user trips arrival at ' + destinationSiteId + ' site with no error' +
         '<div id="notify_user_arrival_at_site_for_track_tokens"></div>' +
         'Expected result: Notify monitoring session for user trips arrival for given track tokens at ' + destinationSiteId + ' site with no error' +
+        '<div id="get_sites_to_notify_monitoring_session_user_of_arrival"></div>' +
+        'Expected result: Returns the set of siteIdentifiers for which canNotifyMonitoringSessionUser is true with no error' +
         '<div id="update_all_trips_user_on_their_way"></div>' +
         'Expected result:<br>- On iOS all trips updated with on their way to true with no error<br>' +
         '- On Android error method not supported' +
@@ -316,12 +318,6 @@ exports.defineManualTests = function (contentEl, createActionButton) {
             clearLog()
             logMessage("Notify Monitoring Session User Of Arrival At Site For TrackTokens");
 
-            // window.Curbside.setTrackingIdentifier(trackingId)
-            //     .then(function () { })
-            //     .catch(function (error) {
-            //         logMessage('Error occured when calling setTrackingIdentifier : ' + error, 'red');
-            //     });
-
             window.Curbside.notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens(destinationSiteId, [trackingToken])
                 .then(function () {
                     logMessage('Successful notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens call for site id ' + destinationSiteId + 
@@ -334,6 +330,24 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         'notify_user_arrival_at_site_for_track_tokens'
     );
 
+    createActionButton(
+        'Get Sites To Notify Monitoring Session User Of Arrival',
+        function () {
+            clearLog()
+            logMessage("Get Sites To Notify Monitoring Session User Of Arrival");
+
+            window.Curbside.getSitesToNotifyMonitoringSessionUserOfArrival()
+                .then(function (sites) {
+                    logMessage('Successful getSitesToNotifyMonitoringSessionUserOfArrival call that is returning following sites: ' + 
+                               sites, 'green');
+                })
+                .catch(function (error) {
+                    logMessage('Error occured when calling getSitesToNotifyMonitoringSessionUserOfArrival : ' + error, 'red');
+                });
+        },
+        'get_sites_to_notify_monitoring_session_user_of_arrival'
+    );
+    
     createActionButton(
         'Update All Trips User On Their Way',
         function () {

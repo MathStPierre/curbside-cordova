@@ -120,6 +120,10 @@ var Curbside = {
         return execCb("notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens", cb, siteId, trackTokens);
     },
 
+    getSitesToNotifyMonitoringSessionUserOfArrival: function(cb) {
+        return execCb("getSitesToNotifyMonitoringSessionUserOfArrival", cb);
+    },
+
     on: function(event, listener) {
         initEventListener();
         if (!(event in eventListeners)) {
