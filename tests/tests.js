@@ -156,7 +156,9 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         'Expected result:<br>- On iOS trip started for ' + destinationSiteId + ' site with trip type ' + tripType + ' with no error<br>' +
         '- On Android error method not supported' +
         '<div id="notify_user_arrival_at_site"></div>' +
-        'Expected result: Monitoring session notify for trips arrival at ' + destinationSiteId + ' site with no error' +
+        'Expected result: Notify monitoring session for user trips arrival at ' + destinationSiteId + ' site with no error' +
+        '<div id="notify_user_arrival_at_site_for_track_tokens"></div>' +
+        'Expected result: Notify monitoring session for user trips arrival for given track tokens at ' + destinationSiteId + ' site with no error' +
         '<div id="update_all_trips_user_on_their_way"></div>' +
         'Expected result:<br>- On iOS all trips updated with on their way to true with no error<br>' +
         '- On Android error method not supported' +
@@ -306,6 +308,30 @@ exports.defineManualTests = function (contentEl, createActionButton) {
                 });
         },
         'notify_user_arrival_at_site'
+    );
+
+    createActionButton(
+        'Notify Monitoring Session User Of Arrival At Site For TrackTokens',
+        function () {
+            clearLog()
+            logMessage("Notify Monitoring Session User Of Arrival At Site For TrackTokens");
+
+            // window.Curbside.setTrackingIdentifier(trackingId)
+            //     .then(function () { })
+            //     .catch(function (error) {
+            //         logMessage('Error occured when calling setTrackingIdentifier : ' + error, 'red');
+            //     });
+
+            window.Curbside.notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens(destinationSiteId, [trackingToken])
+                .then(function () {
+                    logMessage('Successful notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens call for site id ' + destinationSiteId + 
+                               ' and track token ' + trackingToken, 'green');
+                })
+                .catch(function (error) {
+                    logMessage('Error occured when calling notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens : ' + error, 'red');
+                });
+        },
+        'notify_user_arrival_at_site_for_track_tokens'
     );
 
     createActionButton(

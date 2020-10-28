@@ -34,7 +34,9 @@ import org.json.JSONStringer;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import rx.Subscriber;
 import rx.exceptions.OnErrorNotImplementedException;
@@ -401,6 +403,7 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
 
                         if (args.length() >= 3) {
                             String tripTypeArg = this.getStringArg(args, 2);
+                            if (tripTypeArg != null)
 
                             tripType = getTripTypeConstant(tripTypeArg);
                             if (tripType == null) {
@@ -612,12 +615,26 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                     if (userSession != null) {
                         String siteID = this.getStringArg(args, 0);
                         CSSite site = new CSSite(siteID);
+                        listenNextEvent(userSession, Type.NOTIFY_MONITORING_SESSION_USER, callbackContext);
                         userSession.notifyMonitoringSessionUserOfArrivalAtSite(site);
                     } else {
                         callbackContext.error("CSSession must be initialized");                        
                     }                                        
                 break;
                 }
+                case "notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens": {
+                    CSUserSession userSession = CSUserSession.getInstance();
+                    if (userSession != null) {
+                        String siteID = this.getStringArg(args, 0);
+                        CSSite site = new CSSite(siteID);
+                        Set<String> trackTokens = new HashSet(this.getArrayArg(args, 1));
+                        listenNextEvent(userSession, Type.NOTIFY_MONITORING_SESSION_USER, callbackContext);
+                        userSession.notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens(site, trackTokens);
+                    } else {
+                        callbackContext.error("CSSession must be initialized");                        
+                    }                                        
+                break;
+                } 
                 default:
                     callbackContext.error("invalid action:" + action);
                     break;

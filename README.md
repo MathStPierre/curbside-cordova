@@ -493,7 +493,30 @@ document.addEventListener("deviceready", function() {
       verticalAccuracy,
       horizontalAccuracy
     }, "driving", function(error, eta){
-});
+  });
+
+  /**
+   * Call this method to notify the user in the CSMonitoringSession of thearrival of this user at the site "SITE_ID".
+   *
+   * If an error occurs because of an invalid session state, permissions orauthentication with the ARRIVE server,
+   * the callback will be informed with the reason as to whynotifyMonitoringSessionUserOfArrivalAtSite failed.
+   **/ 
+  Curbside.notifyMonitoringSessionUserOfArrivalAtSite("SITE_ID", function(error){
+
+  });
+
+ /**
+     * Call this method to notify the CSMonitoringSession's user of arrivedSite "SITE_ID", the user's arrival for the given trackTokens. Note: This method is used for flexible arrivals. This method will then transfer the trackTokens from the original site to arrivedSite. The arrivedSite has to be in the arrivedSites at the time of the call, otherwise this call is a no-op. Once the order is transferred, closing the trip needs to be done on the arrivedSite.
+     * 
+     * If an error occurs because of an invalid session state, permissions or authentication with the ARRIVE server,
+     * the callback will be informed with the reason as to why notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens failed.
+     **/
+  Curbside.notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens("SITE_ID", trackTokens, function(error){
+
+  });
+
+  
+
 </script>
 ```
 
@@ -583,6 +606,7 @@ All functions return a Promise as an alternative to a callback.
 -   getTrackingIdentifier
 -   getTrackedSites
 -   getEtaToSiteWithIdentifier
+-   notifyMonitoringSessionUserOfArrivalAtSite
 
 The Promise can be used like this:
 
