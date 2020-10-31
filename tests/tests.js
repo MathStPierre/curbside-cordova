@@ -143,6 +143,10 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     var fromDate = new Date(); // for now
     var toDate = new Date(fromDate);
     toDate.setDate(fromDate.getDate() + 3); // in 3 days from now
+    var minutesBeforePickupNotification = 30;
+
+    var notificationTitle = "RR Notification"
+    var notificationMsg = "RR Notification Message"
 
     var curbside_tests = '<h3>Press Start Trip button to start trip</h3>' +
         '<div id="start_trip"></div>' +
@@ -161,6 +165,8 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         'Expected result: Notify monitoring session for user trips arrival for given track tokens at ' + destinationSiteId + ' site with no error' +
         '<div id="get_sites_to_notify_monitoring_session_user_of_arrival"></div>' +
         'Expected result: Returns the set of siteIdentifiers for which canNotifyMonitoringSessionUser is true with no error' +
+        '<div id="set_notification_time_for_scheduled_pickup"></div>' +
+        'Expected result: Set notification time for scheduled pickup with no error' +
         '<div id="update_all_trips_user_on_their_way"></div>' +
         'Expected result:<br>- On iOS all trips updated with on their way to true with no error<br>' +
         '- On Android error method not supported' +
@@ -346,6 +352,23 @@ exports.defineManualTests = function (contentEl, createActionButton) {
                 });
         },
         'get_sites_to_notify_monitoring_session_user_of_arrival'
+    );
+
+    createActionButton(        
+        'Set Notification Time For Scheduled Pickup',
+        function () {
+            clearLog()
+            logMessage("Set Notification Time For Scheduled Pickup");
+
+            window.Curbside.setNotificationTimeForScheduledPickup(minutesBeforePickupNotification)            
+                .then(function () {
+                    logMessage('Successful setNotificationTimeForScheduledPickup call', 'green');
+                })
+                .catch(function (error) {
+                    logMessage('Error occured when calling setNotificationTimeForScheduledPickup : ' + error, 'red');
+                });            
+        },
+        'set_notification_time_for_scheduled_pickup'
     );
     
     createActionButton(

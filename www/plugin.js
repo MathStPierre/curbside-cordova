@@ -124,6 +124,10 @@ var Curbside = {
         return execCb("getSitesToNotifyMonitoringSessionUserOfArrival", cb);
     },
 
+    setNotificationTimeForScheduledPickup: function(cb, minutesBeforePickupNotification) {
+        return execCb("setNotificationTimeForScheduledPickup", minutesBeforePickupNotification, cb);
+    },
+
     on: function(event, listener) {
         initEventListener();
         if (!(event in eventListeners)) {

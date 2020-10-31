@@ -522,6 +522,16 @@ document.addEventListener("deviceready", function() {
 
   });
 
+  /**
+     * Set how many minutes before the scheduled Pickup start time Foreground Service will be started when there is a trip to track. Since Foreground Service starting is dependent on OS system optimizations and priority process it's recommended to add buffer to this value. If Pickup start time is specified while starting a trip passed in `minBeforePickupTime` value in minutes would initiate activation of Foreground service at this time before Pickup Time E.g. Pick up a order at 6.00pm and Foreground service intent to start 30 minutes before Pickup Time. Set the fromDate to be 6.00pm in startTripToSiteWithIdentifierAndEta or startTripToSiteWithIdentifierAndEtaAndType methods and pass 30 minutes to this method. The minimum lower bound for `minBeforePickupTime` is 15 minutes.
+     *
+     * If an error occurs because of an invalid session state, permissions or authentication with the ARRIVE server,
+     * the callback will be informed with the reason as to why setNotificationTimeForScheduledPickup failed.
+     **/
+  Curbside.setNotificationTimeForScheduledPickup(minutesBeforePickup, function(error){
+
+  });
+
   });
 
 </script>
@@ -616,6 +626,7 @@ All functions return a Promise as an alternative to a callback.
 -   notifyMonitoringSessionUserOfArrivalAtSite
 -   notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens
 -   getSitesToNotifyMonitoringSessionUserOfArrival
+-   setNotificationForForegroundService
 
 The Promise can be used like this:
 
