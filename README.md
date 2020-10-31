@@ -292,6 +292,9 @@ Once it is done the manual tests available in **curbside-cordova-tests** plugin 
 
 ### For User Session
 
+In this section user session related Javascript methods are listed. Note that some of those methods are only available on the **iOS** or **Android** platform. When the supported platform is not mentionned it means the method is supported on both **iOS** and **Android** platform.
+
+
 ```html
 <script type="text/javascript">
 document.addEventListener("deviceready", function() {
@@ -410,6 +413,8 @@ document.addEventListener("deviceready", function() {
    *
    * If an error occurs because of an invalid session state, permissions or authentication with the ARRIVE server,
    * the callback will be informed with the reason as to why startUserOnTheirWayTripToSiteWithIdentifier failed.
+   * 
+   * Platform: iOS
    **/
   Curbside.startUserOnTheirWayTripToSiteWithIdentifier("SITE_ID", "UNIQUE_TRACK_TOKEN", "TRIP_TYPE", function(error){
 
@@ -422,6 +427,8 @@ document.addEventListener("deviceready", function() {
    *
    * If an error occurs because of an invalid session state, permissions or authentication with the ARRIVE server,
    * the callback will be informed with the reason as to why updateAllTripsWithUserOnTheirWay failed.
+   * 
+   * Platform: iOS
    **/
   Curbside.updateAllTripsWithUserOnTheirWay(userOnTheirWay, function(error){
 
@@ -510,6 +517,8 @@ document.addEventListener("deviceready", function() {
      * 
      * If an error occurs because of an invalid session state, permissions or authentication with the ARRIVE server,
      * the callback will be informed with the reason as to why notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens failed.
+     * 
+     * Platform: Android
      **/
   Curbside.notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens("SITE_ID", ["UNIQUE_TRACK_TOKEN_1", "UNIQUE_TRACK_TOKEN_2"], function(error){
 
@@ -517,6 +526,8 @@ document.addEventListener("deviceready", function() {
 
  /**
      * Returns the set of siteIdentifiers for which canNotifyMonitoringSessionUser is true
+     * 
+     * Platform: Android
      **/
   Curbside.getSitesToNotifyMonitoringSessionUserOfArrival(function(error, sites){
 
@@ -527,6 +538,8 @@ document.addEventListener("deviceready", function() {
      *
      * If an error occurs because of an invalid session state, permissions or authentication with the ARRIVE server,
      * the callback will be informed with the reason as to why setNotificationTimeForScheduledPickup failed.
+     * 
+     * Platform: Android
      **/
   Curbside.setNotificationTimeForScheduledPickup(minutesBeforePickup, function(error){
 
