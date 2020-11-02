@@ -157,19 +157,21 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         'Expected result: Trip started for ' + destinationSiteId + ' site with ETA window between ' + fromDate + ' to ' + toDate +  
         ' and trip type ' + tripType + ' with no error' +
         '<div id="start_trip_on_their_way"></div>' +
-        'Expected result:<br>- On iOS trip started for ' + destinationSiteId + ' site with trip type ' + tripType + ' with no error<br>' +
-        '- On Android error method not supported' +
+        'Expected result:<br>- On iOS: Trip started for ' + destinationSiteId + ' site with trip type ' + tripType + ' with no error<br>' +
+        '- On Android: Error method not supported' +
         '<div id="notify_user_arrival_at_site"></div>' +
-        'Expected result: Notify monitoring session for user trips arrival at ' + destinationSiteId + ' site with no error' +
+        'Expected result: <br>- On Android: Notify monitoring session for user trips arrival at ' + destinationSiteId + ' site with no error<br>' +
+        '- On iOS: No success or error message, method is not supported' +
         '<div id="notify_user_arrival_at_site_for_track_tokens"></div>' +
-        'Expected result: Notify monitoring session for user trips arrival for given track tokens at ' + destinationSiteId + ' site with no error' +
+        'Expected result: <br>- On Android: Notify monitoring session for user trips arrival for given track tokens at ' + destinationSiteId + ' site with no error<br>' +
+        '- On iOS: No success or error message, method is not supported' +
         '<div id="get_sites_to_notify_monitoring_session_user_of_arrival"></div>' +
         'Expected result: Returns the set of siteIdentifiers for which canNotifyMonitoringSessionUser is true with no error' +
         '<div id="set_notification_time_for_scheduled_pickup"></div>' +
         'Expected result: Set notification time for scheduled pickup with no error' +
         '<div id="update_all_trips_user_on_their_way"></div>' +
-        'Expected result:<br>- On iOS all trips updated with on their way to true with no error<br>' +
-        '- On Android error method not supported' +
+        'Expected result:<br>- On iOS: All trips updated with on their way to true with no error<br>' +
+        '- On Android: error method not supported' +
         '<div id="complete_to_site_with_id"></div>' +
         'Expected result: Trip to ' + destinationSiteId + ' with tracking token marked as completed with no error' +
         '<div id="complete_all"></div>' +
