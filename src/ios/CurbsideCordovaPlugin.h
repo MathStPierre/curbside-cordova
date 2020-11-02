@@ -23,6 +23,10 @@
 
 - (void)startTripToSiteWithIdentifierAndEta:(CDVInvokedUrlCommand*)command;
 
+- (void)startUserOnTheirWayTripToSiteWithIdentifier:(CDVInvokedUrlCommand*)command;
+
+- (void)updateAllTripsWithUserOnTheirWay:(CDVInvokedUrlCommand*)command;
+
 - (void)completeTripToSiteWithIdentifier:(CDVInvokedUrlCommand*)command;
 
 - (void)completeAllTrips:(CDVInvokedUrlCommand*)command;
@@ -34,6 +38,9 @@
 - (void)getTrackedSites:(CDVInvokedUrlCommand*)command;
 
 - (void)getEtaToSiteWithIdentifier:(CDVInvokedUrlCommand*)command;
+
+- (void)notifyMonitoringSessionUserOfArrivalAtSite:(CDVInvokedUrlCommand*)command;
+
 
 // monitoring session
 

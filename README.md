@@ -1,4 +1,4 @@
-# Curbside Cordova plugin for iOS and Android (version 3.2.3)
+# Curbside Cordova plugin for iOS and Android
 
 This plugin is a wrapper for [Curbside SDK](https://developer.curbside.com/docs/).
 
@@ -266,7 +266,13 @@ by
 <content src="cdvtests/index.html" />
 ```
 
-Finally follow the [Quick Install](#quick_install) to ensure Curbside-Cordova is working properly.
+Finally follow the [Quick Install](#quick_install) to ensure Curbside-Cordova is working properly. 
+
+Note that when doing Android installation the package name in  mytestapp/platforms/android/app/google-services.json should be the following: 
+
+```json
+"package_name": "io.cordova.hellocordova"
+```
 
 Note that you can use your current Cordova application to do the testing. 
 
@@ -285,6 +291,9 @@ Once it is done the manual tests available in **curbside-cordova-tests** plugin 
 ## Quick Start
 
 ### For User Session
+
+In this section user session related Javascript methods are listed. Note that some of those methods are only available on the **iOS** or **Android** platform. When the supported platform is not mentionned it means the method is supported on both **iOS** and **Android** platform.
+
 
 ```html
 <script type="text/javascript">
@@ -357,7 +366,21 @@ document.addEventListener("deviceready", function() {
   });
 
   /**
-   * Start a trip tracking the user pickup of "UNIQUE_TRACK_TOKEN" to the site identified by the "SITE_ID". Call this
+   * Start a trip tracking the user pickup of "UNIQUE_TRACK_TOKEN" to the site identified by the "SITE_ID". The TRIP_TYPE can be one of those values ; "CSTripTypeCarryOut", "CSTripTypeDriveThru", "CSTripTypeCurbside" or "CSTripTypeDineIn"
+   * 
+   * Call this
+   * method when the application thinks its appropriate to start tracking the user eg. Order is ready to be picked up at
+   * the site. This information is persisted across relaunch.
+   *
+   * If an error occurs because of an invalid session state, permissions or authentication with the ARRIVE server,
+   * the callback will be informed with the reason as to why startTripToSiteWithIdentifierAndType failed.
+   **/
+  Curbside.startTripToSiteWithIdentifierAndType("SITE_ID", "UNIQUE_TRACK_TOKEN", "TRIP_TYPE", function(error){
+
+  });
+
+  /**
+   * Start a trip tracking the user pickup of "UNIQUE_TRACK_TOKEN" to the site identified by the "SITE_ID" for an time window when the user is expected to do the pickup. Call this
    * method when the application thinks its appropriate to start tracking the user eg. Order is ready to be picked up at
    * the site. This information is persisted across relaunch. toDate can be null.
    *
@@ -365,6 +388,49 @@ document.addEventListener("deviceready", function() {
    * the callback will be informed with the reason as to why startTripToSiteWithIdentifier failed.
    **/
   Curbside.startTripToSiteWithIdentifierAndEta("SITE_ID", "UNIQUE_TRACK_TOKEN", fromDate, toDate, function(error){
+
+  });
+
+
+  /**
+   * Start a trip tracking the user pickup of "UNIQUE_TRACK_TOKEN" to the site identified by the "SITE_ID" for an time window when the user is expected to do the pickup. The TRIP_TYPE can be one of those values ; "CSTripTypeCarryOut", "CSTripTypeDriveThru", "CSTripTypeCurbside" or "CSTripTypeDineIn". Call this
+   * method when the application thinks its appropriate to start tracking the user eg. Order is ready to be picked up at
+   * the site. This information is persisted across relaunch. toDate can be null.
+   *
+   * If an error occurs because of an invalid session state, permissions or authentication with the ARRIVE server,
+   * the callback will be informed with the reason as to why startTripToSiteWithIdentifier failed.
+   **/
+  Curbside.startTripToSiteWithIdentifierAndEtaAndType("SITE_ID", "UNIQUE_TRACK_TOKEN", fromDate, toDate, tripType, function(error){
+
+  });
+
+  /**
+   * Start a trip tracking the user pickup of "UNIQUE_TRACK_TOKEN" to the site identified by the "SITE_ID". The TRIP_TYPE can be one of those values ; "CSTripTypeCarryOut", "CSTripTypeDriveThru", "CSTripTypeCurbside" or "CSTripTypeDineIn"
+   * 
+   * Call this
+   * method when the application thinks its appropriate to start tracking the user (eg. Order is ready to be picked up at
+   * the site) and you know that the user has started travelling to the site. This information is persisted across relaunch.
+   *
+   * If an error occurs because of an invalid session state, permissions or authentication with the ARRIVE server,
+   * the callback will be informed with the reason as to why startUserOnTheirWayTripToSiteWithIdentifier failed.
+   * 
+   * Platform: iOS
+   **/
+  Curbside.startUserOnTheirWayTripToSiteWithIdentifier("SITE_ID", "UNIQUE_TRACK_TOKEN", "TRIP_TYPE", function(error){
+
+  });
+
+  /**
+   * Update userOnTheirWay parameter for all trips. Call this method * to explicitly tell the SDK that the user is on their way.
+   * 
+   * Note that you should use this method only when you know that the * user is on their way to the site, or to cancel the effect of the * previous call of this method. 
+   *
+   * If an error occurs because of an invalid session state, permissions or authentication with the ARRIVE server,
+   * the callback will be informed with the reason as to why updateAllTripsWithUserOnTheirWay failed.
+   * 
+   * Platform: iOS
+   **/
+  Curbside.updateAllTripsWithUserOnTheirWay(userOnTheirWay, function(error){
 
   });
 
@@ -434,7 +500,53 @@ document.addEventListener("deviceready", function() {
       verticalAccuracy,
       horizontalAccuracy
     }, "driving", function(error, eta){
-});
+  });
+
+  /**
+   * Call this method to notify the user in the CSMonitoringSession of thearrival of this user at the site "SITE_ID".
+   *
+   * If an error occurs because of an invalid session state, permissions orauthentication with the ARRIVE server,
+   * the callback will be informed with the reason as to whynotifyMonitoringSessionUserOfArrivalAtSite failed.
+   **/ 
+  Curbside.notifyMonitoringSessionUserOfArrivalAtSite("SITE_ID", function(error){
+
+  });
+
+ /**
+     * Call this method to notify the CSMonitoringSession's user of arrivedSite "SITE_ID", the user's arrival for the given trackTokens. Note: This method is used for flexible arrivals. This method will then transfer the trackTokens from the original site to arrivedSite. The arrivedSite has to be in the arrivedSites at the time of the call, otherwise this call is a no-op. Once the order is transferred, closing the trip needs to be done on the arrivedSite.
+     * 
+     * If an error occurs because of an invalid session state, permissions or authentication with the ARRIVE server,
+     * the callback will be informed with the reason as to why notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens failed.
+     * 
+     * Platform: Android
+     **/
+  Curbside.notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens("SITE_ID", ["UNIQUE_TRACK_TOKEN_1", "UNIQUE_TRACK_TOKEN_2"], function(error){
+
+  });
+
+ /**
+     * Returns the set of siteIdentifiers for which canNotifyMonitoringSessionUser is true
+     * 
+     * Platform: Android
+     **/
+  Curbside.getSitesToNotifyMonitoringSessionUserOfArrival(function(error, sites){
+
+  });
+
+  /**
+     * Set how many minutes before the scheduled Pickup start time Foreground Service will be started when there is a trip to track. Since Foreground Service starting is dependent on OS system optimizations and priority process it's recommended to add buffer to this value. If Pickup start time is specified while starting a trip passed in `minBeforePickupTime` value in minutes would initiate activation of Foreground service at this time before Pickup Time E.g. Pick up a order at 6.00pm and Foreground service intent to start 30 minutes before Pickup Time. Set the fromDate to be 6.00pm in startTripToSiteWithIdentifierAndEta or startTripToSiteWithIdentifierAndEtaAndType methods and pass 30 minutes to this method. The minimum lower bound for `minBeforePickupTime` is 15 minutes.
+     *
+     * If an error occurs because of an invalid session state, permissions or authentication with the ARRIVE server,
+     * the callback will be informed with the reason as to why setNotificationTimeForScheduledPickup failed.
+     * 
+     * Platform: Android
+     **/
+  Curbside.setNotificationTimeForScheduledPickup(minutesBeforePickup, function(error){
+
+  });
+
+  });
+
 </script>
 ```
 
@@ -513,13 +625,21 @@ All functions return a Promise as an alternative to a callback.
 
 -   setTrackingIdentifier
 -   startTripToSiteWithIdentifier
+-   startTripToSiteWithIdentifierAndType
 -   startTripToSiteWithIdentifierAndEta
+-   startTripToSiteWithIdentifierAndEtaAndType
+-   startUserOnTheirWayTripToSiteWithIdentifier 
+-   updateAllTripsWithUserOnTheirWay
 -   completeTripToSiteWithIdentifier
 -   completeAllTrips
 -   cancelTripToSiteWithIdentifier
 -   getTrackingIdentifier
 -   getTrackedSites
 -   getEtaToSiteWithIdentifier
+-   notifyMonitoringSessionUserOfArrivalAtSite
+-   notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens
+-   getSitesToNotifyMonitoringSessionUserOfArrival
+-   setNotificationForForegroundService
 
 The Promise can be used like this:
 

@@ -48,10 +48,26 @@ var Curbside = {
         return execCb("startTripToSiteWithIdentifier", cb, siteID, trackToken);
     },
 
+    startTripToSiteWithIdentifierAndType: function(siteID, trackToken, tripType, cb) {
+        return execCb("startTripToSiteWithIdentifier", cb, siteID, trackToken, tripType);
+    },
+
     startTripToSiteWithIdentifierAndEta: function(siteID, trackToken, fromDate, toDate, cb) {
         return execCb("startTripToSiteWithIdentifierAndEta", cb, siteID, trackToken, fromDate, toDate);
     },
 
+    startTripToSiteWithIdentifierAndEtaAndType: function(siteID, trackToken, fromDate, toDate, tripType, cb) {
+        return execCb("startTripToSiteWithIdentifierAndEta", cb, siteID, trackToken, fromDate, toDate, tripType);
+    },
+
+    startUserOnTheirWayTripToSiteWithIdentifier: function(siteID, trackToken, tripType, cb) {
+        return execCb("startUserOnTheirWayTripToSiteWithIdentifier", cb, siteID, trackToken, tripType);
+    },
+
+    updateAllTripsWithUserOnTheirWay: function(userOnTheirWay, cb) {
+        return execCb("updateAllTripsWithUserOnTheirWay", cb, userOnTheirWay);
+    },
+    
     completeTripToSiteWithIdentifier: function(siteID, trackToken, cb) {
         return execCb("completeTripToSiteWithIdentifier", cb, siteID, trackToken);
     },
@@ -94,6 +110,22 @@ var Curbside = {
 
     stopMonitoringArrivals: function(cb) {
         return execCb("stopMonitoringArrivals", cb);
+    },
+
+    notifyMonitoringSessionUserOfArrivalAtSite: function(siteId, cb) {
+        return execCb("notifyMonitoringSessionUserOfArrivalAtSite", cb, siteId);
+    },
+
+    notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens: function(siteId, trackTokens, cb) {
+        return execCb("notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens", cb, siteId, trackTokens);
+    },
+
+    getSitesToNotifyMonitoringSessionUserOfArrival: function(cb) {
+        return execCb("getSitesToNotifyMonitoringSessionUserOfArrival", cb);
+    },
+
+    setNotificationTimeForScheduledPickup: function(cb, minutesBeforePickupNotification) {
+        return execCb("setNotificationTimeForScheduledPickup", minutesBeforePickupNotification, cb);
     },
 
     on: function(event, listener) {

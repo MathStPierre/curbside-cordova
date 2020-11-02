@@ -2,10 +2,17 @@
  */
 package com.curbside;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import androidx.core.app.NotificationCompat;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.location.Location;
+import android.os.Build;
 
 import com.curbside.sdk.CSMonitoringSession;
 import com.curbside.sdk.CSMotionActivity;
+import com.curbside.sdk.CSConstants;
 import com.curbside.sdk.CSSession;
 import com.curbside.sdk.CSSite;
 import com.curbside.sdk.CSTransportationMode;
@@ -18,7 +25,14 @@ import com.curbside.sdk.event.Path;
 import com.curbside.sdk.event.Status;
 import com.curbside.sdk.event.Type;
 import com.curbside.sdk.model.CSUserInfo;
+import com.curbside.sdk.R;
 import com.google.firebase.messaging.RemoteMessage;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -26,14 +40,11 @@ import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
 import org.joda.time.DateTime;
+import org.joda.time.Minutes;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONStringer;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import rx.Subscriber;
 import rx.exceptions.OnErrorNotImplementedException;
@@ -59,6 +70,16 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
         if (monitoringSession != null) {
             subscribe(monitoringSession, Type.FETCH_LOCATION_UPDATE, "userStatusUpdates");
         }
+    }
+
+    private Integer getIntArg(JSONArray args, int i) {
+        Integer value;
+        try {
+            value = new Integer(args.getInt(i));
+        } catch (JSONException | NumberFormatException e) {
+            return null;
+        }
+        return value;
     }
 
     private String getStringArg(JSONArray args, int i) {
@@ -127,6 +148,26 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
         return location;
     }
 
+    private String getTripTypeConstant(String tripTypeArg) {
+
+        String tripType = null;
+
+        if (tripTypeArg.compareTo("CSTripTypeCarryOut") == 0) {
+            tripType = CSConstants.CSTripTypeCarryOut;
+        }
+        else if (tripTypeArg.compareTo("CSTripTypeDriveThru") == 0) {
+            tripType = CSConstants.CSTripTypeDriveThru;
+        }
+        else if (tripTypeArg.compareTo("CSTripTypeCurbside") == 0) {
+            tripType = CSConstants.CSTripTypeCurbside;
+        }
+        else if (tripTypeArg.compareTo("CSTripTypeDineIn") == 0) {
+            tripType = CSConstants.CSTripTypeDineIn;
+        }
+
+        return tripType;
+    }
+    
     private Object jsonEncode(Object object) throws JSONException {
         if (object instanceof Collection) {
             JSONArray result = new JSONArray();
@@ -337,6 +378,45 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
         session.getEventBus().getObservable(Path.USER, type).subscribe(subscriber);
     }
 
+    //Copied from curbside-android-sdk.
+    private int getResourceIdForResourceName(Context context, String resourceName) {
+
+        int resourceId = context.getResources().getIdentifier(resourceName, "drawable", context.getPackageName());
+        if (resourceId == 0) {
+            resourceId = context.getResources().getIdentifier(resourceName, "mipmap", context.getPackageName());
+        }
+        return resourceId;
+    }
+
+    //This method is mostly a duplicate of getNotificationForForegroundServiceMessageWithIcon() in
+    //curbside-android-sdk.
+    private Notification createNotification() {
+
+            final NotificationChannel notificationChannel = new NotificationChannel(cordova.getActivity().getApplicationContext().getString(R.string.notification_channel_id),
+                    cordova.getActivity().getApplicationContext().getString(R.string.notification_channel_name),NotificationManager.IMPORTANCE_DEFAULT);
+
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            final NotificationManager notificationManager =
+                    (NotificationManager) cordova.getActivity().getApplicationContext().getSystemService(cordova.getActivity().getApplicationContext().NOTIFICATION_SERVICE);
+
+            notificationManager.createNotificationChannel(notificationChannel);
+
+            //Assign BigText style notification
+            NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
+            bigText.bigText(cordova.getActivity().getApplicationContext().getString(R.string.notification_permission_granted_big_style_text));
+            bigText.setSummaryText(cordova.getActivity().getApplicationContext().getString(R.string.notification_permission_granted_big_style_summary_text));
+            CharSequence appName = cordova.getActivity().getApplicationContext().getApplicationInfo().loadLabel(cordova.getActivity().getApplicationContext().getApplicationContext().getPackageManager());
+
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(cordova.getActivity().getApplicationContext().getApplicationContext(),
+                    cordova.getActivity().getApplicationContext().getString(R.string.notification_channel_id))
+                    .setContentTitle(cordova.getActivity().getApplicationContext().getString(R.string.notification_permission_granted_content_title,appName))
+                    .setSmallIcon(getResourceIdForResourceName(cordova.getActivity().getApplicationContext().getApplicationContext(), cordova.getActivity().getApplicationContext().getString(R.string.notification_small_icon_name)))
+                    .setOngoing(true)
+                    .setStyle(bigText);
+        return notificationBuilder.build();
+    }
+
     public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
         if (action.equals("eventListener")) {
             this.eventListenerCallbackContext = callbackContext;
@@ -376,8 +456,20 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                     if (userSession != null) {
                         String siteID = this.getStringArg(args, 0);
                         String trackToken = this.getStringArg(args, 1);
+                        String tripType = null;
+
+                        if (args.length() >= 3) {
+                            String tripTypeArg = this.getStringArg(args, 2);
+                            if (tripTypeArg != null)
+
+                            tripType = getTripTypeConstant(tripTypeArg);
+                            if (tripType == null) {
+                                callbackContext.error("Invalid tripType argument");
+                                break;
+                            }
+                        }
                         listenNextEvent(userSession, Type.START_TRIP, callbackContext);
-                        userSession.startTripToSiteWithIdentifier(siteID, trackToken);
+                        userSession.startTripToSiteWithIdentifier(siteID, trackToken, tripType);
                     } else {
                         callbackContext.error("CSUserSession must be initialized");
                     }
@@ -390,13 +482,33 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                         String trackToken = this.getStringArg(args, 1);
                         String from = this.getStringArg(args, 2);
                         String to = this.getStringArg(args, 3);
+                        String tripType = null;
+
+                        if (args.length() >= 5) {
+                            String tripTypeArg = this.getStringArg(args, 4);
+
+                            tripType = getTripTypeConstant(tripTypeArg);
+                            if (tripType == null) {
+                                callbackContext.error("Invalid tripType argument");
+                                break;
+                            }
+                        }
+
                         listenNextEvent(userSession, Type.START_TRIP, callbackContext);
                         DateTime dtFrom = DateTime.parse(from);
                         DateTime dtTo = to == null ? null : DateTime.parse(to);
-                        userSession.startTripToSiteWithIdentifierAndETA(siteID, trackToken, dtFrom, dtTo);
+                        userSession.startTripToSiteWithIdentifierAndETA(siteID, trackToken, dtFrom, dtTo, tripType);
                     } else {
                         callbackContext.error("CSUserSession must be initialized");
                     }
+                    break;
+                }
+                case "startUserOnTheirWayTripToSiteWithIdentifier": {
+                    callbackContext.error("startUserOnTheirWayTripToSiteWithIdentifier not available on Android");
+                    break;
+                }
+                case "updateAllTripsWithUserOnTheirWay": {
+                    callbackContext.error("updateAllTripsWithUserOnTheirWay not available on Android");
                     break;
                 }
                 case "completeTripToSiteWithIdentifier": {
@@ -552,6 +664,63 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                         monitoringSession.stopMonitoringArrivals();
                     } else {
                         callbackContext.error("CSMonitoringSession must be initialized");
+                    }
+                    break;
+                }
+                case "notifyMonitoringSessionUserOfArrivalAtSite": {
+                    CSUserSession userSession = CSUserSession.getInstance();
+                    if (userSession != null) {
+                        String siteID = this.getStringArg(args, 0);
+                        CSSite site = new CSSite(siteID);
+                        listenNextEvent(userSession, Type.NOTIFY_MONITORING_SESSION_USER, callbackContext);
+                        userSession.notifyMonitoringSessionUserOfArrivalAtSite(site);
+                    } else {
+                        callbackContext.error("CSSession must be initialized");                        
+                    }                                        
+                break;
+                }
+                case "notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens": {
+                    CSUserSession userSession = CSUserSession.getInstance();
+                    if (userSession != null) {
+                        String siteID = this.getStringArg(args, 0);
+                        CSSite site = new CSSite(siteID);
+                        Set<String> trackTokens = new HashSet(this.getArrayArg(args, 1));
+                        listenNextEvent(userSession, Type.NOTIFY_MONITORING_SESSION_USER, callbackContext);
+                        userSession.notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens(site, trackTokens);
+                    } else {
+                        callbackContext.error("CSSession must be initialized");                        
+                    }                                        
+                break;
+                } 
+                case "getSitesToNotifyMonitoringSessionUserOfArrival": {
+                    CSUserSession userSession = CSUserSession.getInstance();
+                    if (userSession != null) {
+                        Object sites = userSession.getSitesToNotifyMonitoringSessionUserOfArrival();
+                        if (sites != null) {
+                            callbackContext.success((JSONArray) jsonEncode(sites));
+                        } else {
+                            callbackContext.success(new JSONArray());
+                        }
+                    } else {
+                        callbackContext.error("CSUserSession must be initialized");
+                    }
+                    break;
+                }
+                case "setNotificationTimeForScheduledPickup": {
+                    Integer minutesBeforePickup = this.getIntArg(args, 0);
+                    CSUserSession userSession = CSUserSession.getInstance();
+                    
+                    if (userSession == null) {
+                        callbackContext.error("CSSession must be initialized");                        
+                    } 
+                    else if (minutesBeforePickup == null || minutesBeforePickup.intValue() <= 15) {
+                        callbackContext.error("minutesBeforePickup argument must be a valid integer equal or greater than 15 minutes");                        
+                    }
+                    else {   
+                        Notification fsNotification = createNotification();
+                        userSession.setNotificationForForegroundService(fsNotification, Minutes.minutes(minutesBeforePickup));
+                        //setNotificationForForegroundService never currently send error or success events, so do a success here.
+                        callbackContext.success(); 
                     }
                     break;
                 }
