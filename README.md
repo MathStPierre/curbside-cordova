@@ -1,4 +1,4 @@
-# Curbside Cordova plugin for iOS and Android (version 3.2.3)
+# Curbside Cordova plugin for iOS and Android
 
 This plugin is a wrapper for [Curbside SDK](https://developer.curbside.com/docs/).
 
