@@ -1,6 +1,6 @@
 {
     "name": "curbside-cordova",
-    "version": "3.2.3",
+    "version": "3.5.2",
     "cordova": {
         "id": "curbside-cordova",
         "platforms": [
@@ -11,8 +11,8 @@
     "scripts": {},
     "description": "Curbside Cordova Plugin",
     "author": {
-        "email": "alex.pare.inc@gmail.com",
-        "name": "Alexandre Paré"
+        "email": "platform@rakutenready.com",
+        "name": "Mathieu St-Pierre"
     },
     "repository": {
         "url": "https://github.com/curbside/curbside-cordova"
