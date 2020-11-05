@@ -162,9 +162,6 @@ exports.defineManualTests = function (contentEl, createActionButton) {
         '<div id="notify_user_arrival_at_site"></div>' +
         'Expected result: <br>- On Android: Notify monitoring session for user trips arrival at ' + destinationSiteId + ' site with no error<br>' +
         '- On iOS: No success or error message, method is not supported' +
-        '<div id="notify_user_arrival_at_site_for_track_tokens"></div>' +
-        'Expected result: <br>- On Android: Notify monitoring session for user trips arrival for given track tokens at ' + destinationSiteId + ' site with no error<br>' +
-        '- On iOS: No success or error message, method is not supported' +
         '<div id="get_sites_to_notify_monitoring_session_user_of_arrival"></div>' +
         'Expected result: Returns the set of siteIdentifiers for which canNotifyMonitoringSessionUser is true with no error' +
         '<div id="set_notification_time_for_scheduled_pickup"></div>' +
@@ -318,24 +315,6 @@ exports.defineManualTests = function (contentEl, createActionButton) {
                 });
         },
         'notify_user_arrival_at_site'
-    );
-
-    createActionButton(
-        'Notify Monitoring Session User Of Arrival At Site For TrackTokens',
-        function () {
-            clearLog()
-            logMessage("Notify Monitoring Session User Of Arrival At Site For TrackTokens");
-
-            window.Curbside.notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens(destinationSiteId, [trackingToken])
-                .then(function () {
-                    logMessage('Successful notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens call for site id ' + destinationSiteId + 
-                               ' and track token ' + trackingToken, 'green');
-                })
-                .catch(function (error) {
-                    logMessage('Error occured when calling notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens : ' + error, 'red');
-                });
-        },
-        'notify_user_arrival_at_site_for_track_tokens'
     );
 
     createActionButton(

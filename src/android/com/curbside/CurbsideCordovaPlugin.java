@@ -678,19 +678,6 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                         callbackContext.error("CSSession must be initialized");                        
                     }                                        
                 break;
-                }
-                case "notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens": {
-                    CSUserSession userSession = CSUserSession.getInstance();
-                    if (userSession != null) {
-                        String siteID = this.getStringArg(args, 0);
-                        CSSite site = new CSSite(siteID);
-                        Set<String> trackTokens = new HashSet(this.getArrayArg(args, 1));
-                        listenNextEvent(userSession, Type.NOTIFY_MONITORING_SESSION_USER, callbackContext);
-                        userSession.notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens(site, trackTokens);
-                    } else {
-                        callbackContext.error("CSSession must be initialized");                        
-                    }                                        
-                break;
                 } 
                 case "getSitesToNotifyMonitoringSessionUserOfArrival": {
                     CSUserSession userSession = CSUserSession.getInstance();
