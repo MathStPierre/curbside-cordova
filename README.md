@@ -513,18 +513,6 @@ document.addEventListener("deviceready", function() {
   });
 
  /**
-     * Call this method to notify the CSMonitoringSession's user of arrivedSite "SITE_ID", the user's arrival for the given trackTokens. Note: This method is used for flexible arrivals. This method will then transfer the trackTokens from the original site to arrivedSite. The arrivedSite has to be in the arrivedSites at the time of the call, otherwise this call is a no-op. Once the order is transferred, closing the trip needs to be done on the arrivedSite.
-     * 
-     * If an error occurs because of an invalid session state, permissions or authentication with the ARRIVE server,
-     * the callback will be informed with the reason as to why notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens failed.
-     * 
-     * Platform: Android
-     **/
-  Curbside.notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens("SITE_ID", ["UNIQUE_TRACK_TOKEN_1", "UNIQUE_TRACK_TOKEN_2"], function(error){
-
-  });
-
- /**
      * Returns the set of siteIdentifiers for which canNotifyMonitoringSessionUser is true
      * 
      * Platform: Android
@@ -637,7 +625,6 @@ All functions return a Promise as an alternative to a callback.
 -   getTrackedSites
 -   getEtaToSiteWithIdentifier
 -   notifyMonitoringSessionUserOfArrivalAtSite
--   notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens
 -   getSitesToNotifyMonitoringSessionUserOfArrival
 -   setNotificationForForegroundService
 

@@ -116,10 +116,6 @@ var Curbside = {
         return execCb("notifyMonitoringSessionUserOfArrivalAtSite", cb, siteId);
     },
 
-    notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens: function(siteId, trackTokens, cb) {
-        return execCb("notifyMonitoringSessionUserOfArrivalAtSiteForTrackTokens", cb, siteId, trackTokens);
-    },
-
     getSitesToNotifyMonitoringSessionUserOfArrival: function(cb) {
         return execCb("getSitesToNotifyMonitoringSessionUserOfArrival", cb);
     },
