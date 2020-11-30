@@ -570,39 +570,6 @@ document.addEventListener("deviceready", function() {
 
   });
 
-  /**
-   * Completes the trip(s) identified by the trackToken(s) and trackIdentifier to this site.
-   * Call this method when the trip(s) for the given trackToken(s) is/are completed by the user.
-   * If the trackTokens is nil, then all trips to this site for the user will be marked complete.
-   **/
-  Curbside.completeTripForTrackingIdentifier("USER_UNIQUE_TRACKING_ID", ["UNIQUE_TRACK_TOKEN_1", "UNIQUE_TRACK_TOKEN_2"], function(error){
-
-  });
-
-  /**
-   * Cancels the trip(s) identified by the trackToken(s) and trackIdentifier to this site.
-   * Call this method when the trip(s) for the given trackToken(s) is/are cancelled by the user.
-   * If the trackTokens is nil, then all trips to this site for the user will be canceled.
-   **/
-  Curbside.cancelTripForTrackingIdentifier("USER_UNIQUE_TRACKING_ID", ["UNIQUE_TRACK_TOKEN_1", "UNIQUE_TRACK_TOKEN_2"], function(error){
-
-  });
-
-  /**
-   * This subscribes to user arrival and status updates to the site defined by arrivalSite.
-   * If an error occurs because of an invalid session state, permissions or authentication with the ARRIVE server,
-   * Will trigger userStatusUpdates
-   **/
-  Curbside.startMonitoringArrivalsToSiteWithIdentifier("SITE_ID", function(error){
-
-  });
-
-  /**
-   * This unsubscribes to user status updates.
-   **/
-  Curbside.stopMonitoringArrivals(function(error){
-
-  });
 });
 </script>
 ```
