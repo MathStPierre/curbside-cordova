@@ -235,6 +235,12 @@ exports.defineManualTests = function (contentEl, createActionButton) {
                 .catch(function (error) {
                     logMessage('Error occured when calling startTripToSiteWithIdentifier : ' + error, 'red');
                 });
+
+            window.Curbside.setTrackingIdentifier(null)
+                .then(function () { })
+                .catch(function (error) {
+                    logMessage('Error occured when calling setTrackingIdentifier : ' + error, 'red');
+                });
         },
         'start_trip_with_trip_type'
     );
