@@ -10,7 +10,6 @@ import android.content.Context;
 import android.location.Location;
 import android.os.Build;
 
-import com.curbside.sdk.CSMonitoringSession;
 import com.curbside.sdk.CSMotionActivity;
 import com.curbside.sdk.CSConstants;
 import com.curbside.sdk.CSSession;
@@ -64,11 +63,6 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
             subscribe(userSession, Type.APPROACHING_SITE, "userApproachingSite");
             subscribe(userSession, Type.ARRIVED_AT_SITE, "userArrivedAtSite");
             subscribe(userSession, Type.UPDATED_TRACKED_SITES, "updatedTrackedSites");
-        }
-
-        CSMonitoringSession monitoringSession = CSMonitoringSession.getInstance();
-        if (monitoringSession != null) {
-            subscribe(monitoringSession, Type.FETCH_LOCATION_UPDATE, "userStatusUpdates");
         }
     }
 
@@ -330,13 +324,6 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                 case ETA_FROM_SITE:
                     callbackContext.error("CSUserSession must be initialized");
                     break;
-                case START_MONITORING_ARRIVALS:
-                case STOP_MONITORING_ARRIVALS:
-                case NOTIFY_MONITORING_SESSION_USER:
-                case COMPLETE_TRIP_FOR_TRACKING_IDENTIFIER:
-                case CANCEL_TRIP_FOR_TRACKING_IDENTIFIER:
-                    callbackContext.error("CSMonitoringSession must be initialized");
-                    break;
             }
         } else {
             Subscriber<Event> subscriber = new Subscriber<Event>() {
@@ -428,17 +415,8 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
             switch (action) {
                 case "setTrackingIdentifier": {
                     String trackingIdentifier = this.getStringArg(args, 0);
-                    CSMonitoringSession monitoringSession = CSMonitoringSession.getInstance();
                     CSUserSession userSession = CSUserSession.getInstance();
-                    if (monitoringSession != null) {
-                        if (trackingIdentifier != null) {
-                            listenNextEvent(monitoringSession, Type.REGISTER_TRACKING_ID, callbackContext);
-                            monitoringSession.registerTrackingIdentifier(trackingIdentifier);
-                        } else {
-                            listenNextEvent(monitoringSession, Type.UNREGISTER_TRACKING_ID, callbackContext);
-                            monitoringSession.unregisterTrackingIdentifier();
-                        }
-                    } else if (userSession != null) {
+                    if (userSession != null) {
                         if (trackingIdentifier != null) {
                             listenNextEvent(userSession, Type.REGISTER_TRACKING_ID, callbackContext);
                             userSession.registerTrackingIdentifier(trackingIdentifier);
@@ -556,11 +534,8 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                     break;
                 }
                 case "getTrackingIdentifier": {
-                    CSMonitoringSession monitoringSession = CSMonitoringSession.getInstance();
                     CSUserSession userSession = CSUserSession.getInstance();
-                    if (monitoringSession != null) {
-                        callbackContext.success(monitoringSession.getTrackingIdentifier());
-                    } else if (userSession != null) {
+                    if (userSession != null) {
                         callbackContext.success(userSession.getTrackingIdentifier());
                     } else {
                         callbackContext.error("CSSession must be initialized");
@@ -619,51 +594,6 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                         userSession.getEtaToSiteWithIdentifier(siteID, location, transportationMode);
                     } else {
                         callbackContext.error("CSUserSession must be initialized");
-                    }
-                    break;
-                }
-                case "completeTripForTrackingIdentifier": {
-                    CSMonitoringSession monitoringSession = CSMonitoringSession.getInstance();
-                    if (monitoringSession != null) {
-                        String trackingIdentifier = this.getStringArg(args, 0);
-                        List<String> trackTokens = this.getArrayArg(args, 1);
-                        listenNextEvent(monitoringSession, Type.COMPLETE_TRIP_FOR_TRACKING_IDENTIFIER, callbackContext);
-                        monitoringSession.completeTripForTrackingIdentifier(trackingIdentifier, trackTokens);
-                    } else {
-                        callbackContext.error("CSMonitoringSession must be initialized");
-                    }
-                    break;
-                }
-                case "cancelTripForTrackingIdentifier": {
-                    CSMonitoringSession monitoringSession = CSMonitoringSession.getInstance();
-                    if (monitoringSession != null) {
-                        String trackingIdentifier = this.getStringArg(args, 0);
-                        List<String> trackTokens = this.getArrayArg(args, 1);
-                        listenNextEvent(monitoringSession, Type.CANCEL_TRIP_FOR_TRACKING_IDENTIFIER, callbackContext);
-                        monitoringSession.cancelTripForTrackingIdentifier(trackingIdentifier, trackTokens);
-                    } else {
-                        callbackContext.error("CSMonitoringSession must be initialized");
-                    }
-                    break;
-                }
-                case "startMonitoringArrivalsToSiteWithIdentifier": {
-                    CSMonitoringSession monitoringSession = CSMonitoringSession.getInstance();
-                    if (monitoringSession != null) {
-                        String siteID = this.getStringArg(args, 0);
-                        listenNextEvent(monitoringSession, Type.START_MONITORING_ARRIVALS, callbackContext);
-                        monitoringSession.startMonitoringArrivalsToSiteWithIdentifier(siteID);
-                    } else {
-                        callbackContext.error("CSMonitoringSession must be initialized");
-                    }
-                    break;
-                }
-                case "stopMonitoringArrivals": {
-                    CSMonitoringSession monitoringSession = CSMonitoringSession.getInstance();
-                    if (monitoringSession != null) {
-                        listenNextEvent(monitoringSession, Type.STOP_MONITORING_ARRIVALS, callbackContext);
-                        monitoringSession.stopMonitoringArrivals();
-                    } else {
-                        callbackContext.error("CSMonitoringSession must be initialized");
                     }
                     break;
                 }
