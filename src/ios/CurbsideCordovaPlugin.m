@@ -3,7 +3,7 @@
 
 @import Curbside;
 
-@interface CurbsideCordovaPlugin () <CSUserSessionDelegate, CSMonitoringSessionDelegate, CLLocationManagerDelegate>
+@interface CurbsideCordovaPlugin () <CSUserSessionDelegate, CLLocationManagerDelegate>
 {
     NSString* _eventListenerCallbackId;
     NSMutableArray<CDVPluginResult*>* _pendingEventResults;
@@ -106,7 +106,6 @@ BOOL userSessionInitializationErrorSkipped = false;
     
 - (void)finishLaunching:(NSNotification *)notification {
     [CSUserSession currentSession].delegate = self;
-    [CSMonitoringSession currentSession].delegate = self;
 }
     
 // utils
@@ -329,25 +328,9 @@ BOOL userSessionInitializationErrorSkipped = false;
     }
 }
     
-    // Session
-- (void)session:(CSSession *)session changedState:(CSSessionState)newState {
-    [self sendSuccessEvent:@"changedState" withResult:[self sessionStateEncode:newState]];
-    if([session isKindOfClass:[CSMonitoringSession class]]){
-        CSMonitoringSession* monitoringSession = (CSMonitoringSession*) session;
-        if (monitoringSession.sessionState == CSSessionStateValid || monitoringSession.sessionState == CSSessionStateAuthenticated) {
-            monitoringSession.statusesUpdatedHandler = ^(NSArray<CSUserStatusUpdate*> *userStatusUpdates) {
-                [self sendSuccessEvent:@"userStatusUpdates" withResult:[self userStatusUpdatesEncode:userStatusUpdates]];
-            };
-        }
-    }
-}
-    
 - (CSSession*)getSession {
-    CSMonitoringSession* monitoringSession = [CSMonitoringSession currentSession];
     CSUserSession* userSession = [CSUserSession currentSession];
-    if (monitoringSession.sessionState == CSSessionStateValid || monitoringSession.sessionState == CSSessionStateAuthenticated) {
-        return monitoringSession;    
-    }
+   
     if (userSession.sessionState == CSSessionStateValid || userSession.sessionState == CSSessionStateAuthenticated) {
         return userSession;    
     }
@@ -400,10 +383,7 @@ BOOL userSessionInitializationErrorSkipped = false;
 }
   
 - (void)session:(CSUserSession *)session encounteredError:(NSError *)error forOperation:(CSUserSessionAction)customerSessionAction {
-    CSSessionState monitoringSessionState = [CSMonitoringSession currentSession].sessionState;
-    BOOL hasValidMonitoringSession = (monitoringSessionState == CSSessionStateValid || monitoringSessionState == CSSessionStateAuthenticated);
-    // Only notify CSErrorCodeUsageTokenNotSet if there is no valid monitoring session
-    if(userSessionInitializationErrorSkipped || error.code != CSErrorCodeUsageTokenNotSet || !hasValidMonitoringSession){
+    if(userSessionInitializationErrorSkipped || error.code != CSErrorCodeUsageTokenNotSet){
         [self sendErrorEvent:[error localizedDescription]];
     } else {
         userSessionInitializationErrorSkipped = true;
@@ -610,76 +590,6 @@ BOOL userSessionInitializationErrorSkipped = false;
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
 }
-
-    // Monitoring Sesion
-    
-- (void)session:(nonnull CSMonitoringSession *)session encounteredError:(nonnull NSError *)error {
-    [self sendErrorEvent:[error localizedDescription]];
-}
-    
-- (void) startMonitoringArrivalsToSiteWithIdentifier:(CDVInvokedUrlCommand*)command {
-    CDVPluginResult* pluginResult;
-    NSString* siteID = [self getStringArg:command.arguments at:0];
-    
-    CSMonitoringSession* session = [CSMonitoringSession currentSession];
-    if(session == nil){
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"CSMonitoringSession must be initialized"];
-    } else if (siteID == nil) {
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"siteID was null"];
-    } else {
-        [session startMonitoringArrivalsToSiteWithIdentifier:siteID];
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    }
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-}
-    
-- (void) stopMonitoringArrivals:(CDVInvokedUrlCommand*)command {
-    CDVPluginResult* pluginResult;
-    
-    CSMonitoringSession* session = [CSMonitoringSession currentSession];
-    if(session == nil){
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"CSMonitoringSession must be initialized"];
-    } else {
-        [session stopMonitoringArrivals];
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    }
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-}
-    
-- (void)completeTripForTrackingIdentifier:(CDVInvokedUrlCommand*)command {
-    CDVPluginResult* pluginResult;
-    NSString* trackingIdentifier = [self getStringArg:command.arguments at:0];
-    NSArray<NSString *>* trackTokens = [self getArrayArg:command.arguments at:1];
-    
-    CSMonitoringSession* session = [CSMonitoringSession currentSession];
-    if(session == nil) {
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"CSMonitoringSession must be initialized"];
-    } else if(trackingIdentifier == nil) {
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"trackingIdentifier was null"];
-    } else {
-        [session completeTripForTrackingIdentifier:trackingIdentifier trackTokens:trackTokens];
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    }
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-}
-    
-- (void)cancelTripForTrackingIdentifier:(CDVInvokedUrlCommand*)command {
-    CDVPluginResult* pluginResult;
-    NSString* trackingIdentifier = [self getStringArg:command.arguments at:0];
-    NSArray<NSString *>* trackTokens = [self getArrayArg:command.arguments at:1];
-    
-    CSMonitoringSession* session = [CSMonitoringSession currentSession];
-    if(session == nil) {
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"CSMonitoringSession must be initialized"];
-    } else if(trackingIdentifier == nil) {
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"trackingIdentifier was null"];
-    } else {
-        [session cancelTripForTrackingIdentifier:trackingIdentifier trackTokens:trackTokens];
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    }
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-}
-
 
 - (void)notifyMonitoringSessionUserOfArrivalAtSite:(CDVInvokedUrlCommand*)command {
     CDVPluginResult* pluginResult;

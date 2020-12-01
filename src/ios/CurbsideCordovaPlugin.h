@@ -41,15 +41,4 @@
 
 - (void)notifyMonitoringSessionUserOfArrivalAtSite:(CDVInvokedUrlCommand*)command;
 
-
-// monitoring session
-
-- (void)completeTripForTrackingIdentifier:(CDVInvokedUrlCommand*)command;
-
-- (void)cancelTripForTrackingIdentifier:(CDVInvokedUrlCommand*)command;
-
-- (void)startMonitoringArrivalsToSiteWithIdentifier:(CDVInvokedUrlCommand*)command;
-
-- (void)stopMonitoringArrivals:(CDVInvokedUrlCommand*)command;
-
 @end

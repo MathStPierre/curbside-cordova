@@ -61,15 +61,6 @@ In `platforms/ios/YOUR_PROJECT/Classes/AppDelegate.m`
   [userSession application:application didFinishLaunchingWithOptions:launchOptions];
 ```
 
-#### **Monitoring Session**
-
-If your app does not already request location, In `platforms/ios/YOUR_PROJECT/Classes/AppDelegate.m` in `-(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions` add this:
-
-```objc
-    CSMonitoringSession *monitoringSession = [CSMonitoringSession createSessionWithAPIKey:@"APIKey" secret:@"secret" delegate:nil];
-    [monitoringSession application:application didFinishLaunchingWithOptions:launchOptions];
-```
-
 #### **Configuration**
 
 You can also configure the following variables to customize the iOS location plist entries
@@ -202,28 +193,6 @@ In `platforms/android/app/src/main/java/io/cordova/YOUR_PROJECT/MainActivity.jav
         ...
 ```
 
-or if you whant to have the monitoring session
-
-```java
-    public class MainActivity extends CordovaActivity
-    {
-      private static String API_KEY = "API_KEY";
-      private static String SECRET = "SECRET";
-      private static final int PERMISSION_REQUEST_CODE = 1;
-
-      @Override
-      public void onCreate(final Bundle savedInstanceState) {
-          super.onCreate(savedInstanceState);
-
-          CSMonitoringSession.init(this, new BasicAuthCurbsideCredentialProvider(API_KEY, SECRET));
-
-          if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                  ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-              String[] permissions = new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
-              ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE);
-          }
-        ...
-```
 
 In `platforms/android/cordova/lib/config/GradlePropertiesParser.js` turned on useAndroidX:
 
@@ -343,10 +312,10 @@ document.addEventListener("deviceready", function() {
   /**
    * Set the "USER_UNIQUE_TRACKING_ID" of the user currently logged in your app. This may be nil when the app is
    * started, but as the user logs into the app, make sure this value is set. trackingIdentifier needs to be set to use
-   * session specific methods for starting trips or monitoring sites. This identifier will be persisted across
+   * session specific methods for starting trips. This identifier will be persisted across
    * application restarts.
    *
-   * When the user logs out, set this to nil, which will in turn end the user session or monitoring session.
+   * When the user logs out, set this to nil, which will in turn end the user session.
    * Note: The maximum length of the trackingIdentifier is 36 characters.
    **/
   Curbside.setTrackingIdentifier("USER_UNIQUE_TRACKING_ID", function(error){
@@ -503,10 +472,10 @@ document.addEventListener("deviceready", function() {
   });
 
   /**
-   * Call this method to notify the user in the CSMonitoringSession of thearrival of this user at the site "SITE_ID".
+   * Call this method to notify the user in the CSMonitoringSession of the arrival of this user at the site "SITE_ID".
    *
    * If an error occurs because of an invalid session state, permissions orauthentication with the ARRIVE server,
-   * the callback will be informed with the reason as to whynotifyMonitoringSessionUserOfArrivalAtSite failed.
+   * the callback will be informed with the reason as to why notifyMonitoringSessionUserOfArrivalAtSite failed.
    **/ 
   Curbside.notifyMonitoringSessionUserOfArrivalAtSite("SITE_ID", function(error){
 
@@ -538,74 +507,6 @@ document.addEventListener("deviceready", function() {
 </script>
 ```
 
-### For Monitoring Session
-
-```html
-<script type="text/javascript">
-document.addEventListener("deviceready", function() {
-   /**
-   * Will be triggered when user status updates are sent to the consuming application.
-   **/
-  Curbside.on("userStatusUpdates", function(UserStatusUpdates){
-    // Do something
-  });
-
-  /**
-   * Set the "USER_UNIQUE_TRACKING_ID" of the user currently logged in your app. This may be nil when the app is
-   * started, but as the user logs into the app, make sure this value is set. trackingIdentifier needs to be set to use
-   * session specific methods for starting trips or monitoring sites. This identifier will be persisted across
-   * application restarts.
-   *
-   * When the user logs out, set this to nil, which will in turn end the user session or monitoring session.
-   * Note: The maximum length of the trackingIdentifier is 36 characters.
-   **/
-  Curbside.setTrackingIdentifier("USER_UNIQUE_TRACKING_ID", function(error){
-
-  });
-
-  /**
-   * Returns the "USER_UNIQUE_TRACKING_ID" of the currently tracked user.
-   **/
-  Curbside.getTrackingIdentifier(function(error, trackingIdentifier){
-
-  });
-
-  /**
-   * Completes the trip(s) identified by the trackToken(s) and trackIdentifier to this site.
-   * Call this method when the trip(s) for the given trackToken(s) is/are completed by the user.
-   * If the trackTokens is nil, then all trips to this site for the user will be marked complete.
-   **/
-  Curbside.completeTripForTrackingIdentifier("USER_UNIQUE_TRACKING_ID", ["UNIQUE_TRACK_TOKEN_1", "UNIQUE_TRACK_TOKEN_2"], function(error){
-
-  });
-
-  /**
-   * Cancels the trip(s) identified by the trackToken(s) and trackIdentifier to this site.
-   * Call this method when the trip(s) for the given trackToken(s) is/are cancelled by the user.
-   * If the trackTokens is nil, then all trips to this site for the user will be canceled.
-   **/
-  Curbside.cancelTripForTrackingIdentifier("USER_UNIQUE_TRACKING_ID", ["UNIQUE_TRACK_TOKEN_1", "UNIQUE_TRACK_TOKEN_2"], function(error){
-
-  });
-
-  /**
-   * This subscribes to user arrival and status updates to the site defined by arrivalSite.
-   * If an error occurs because of an invalid session state, permissions or authentication with the ARRIVE server,
-   * Will trigger userStatusUpdates
-   **/
-  Curbside.startMonitoringArrivalsToSiteWithIdentifier("SITE_ID", function(error){
-
-  });
-
-  /**
-   * This unsubscribes to user status updates.
-   **/
-  Curbside.stopMonitoringArrivals(function(error){
-
-  });
-});
-</script>
-```
 
 ### Promise
 

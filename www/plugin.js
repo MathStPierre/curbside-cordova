@@ -96,22 +96,6 @@ var Curbside = {
         return execCb("getEtaToSiteWithIdentifier", cb, siteId, location, transportationMode);
     },
 
-    completeTripForTrackingIdentifier: function(trackingIdentifier, trackTokens, cb) {
-        return execCb("completeTripForTrackingIdentifier", cb, trackingIdentifier, trackTokens);
-    },
-
-    cancelTripForTrackingIdentifier: function(trackingIdentifier, trackTokens, cb) {
-        return execCb("cancelTripForTrackingIdentifier", cb, trackingIdentifier, trackTokens);
-    },
-
-    startMonitoringArrivalsToSiteWithIdentifier: function(siteID, cb) {
-        return execCb("startMonitoringArrivalsToSiteWithIdentifier", cb, siteID);
-    },
-
-    stopMonitoringArrivals: function(cb) {
-        return execCb("stopMonitoringArrivals", cb);
-    },
-
     notifyMonitoringSessionUserOfArrivalAtSite: function(siteId, cb) {
         return execCb("notifyMonitoringSessionUserOfArrivalAtSite", cb, siteId);
     },
