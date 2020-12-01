@@ -283,7 +283,8 @@ public class CurbsideCordovaPlugin extends CordovaPlugin {
                         result.put("result", jsonEncode(event.object));
                     }
                     PluginResult dataResult = new PluginResult(
-                            event.status == Status.SUCCESS ? PluginResult.Status.OK : PluginResult.Status.ERROR,
+                            event.status == Status.SUCCESS || event.status == Status.TRUE || 
+                            event.status == Status.COMPLETED ? PluginResult.Status.OK : PluginResult.Status.ERROR,
                             result);
                     dataResult.setKeepCallback(true);
                     if (ccPlugin.eventListenerCallbackContext != null) {
