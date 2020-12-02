@@ -276,6 +276,8 @@ document.addEventListener("deviceready", function() {
 
   /**
    * Will be triggered when an trip is started for a site.
+   * 
+   * Platform: iOS
    **/
   Curbside.on("tripStartedForSite", function(site){
     // Do something
