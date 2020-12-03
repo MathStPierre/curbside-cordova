@@ -79,8 +79,8 @@ npm login
 ```
 
 **username**: curbside
-**password**: Use the password found in Eng json bundle in **curbside-devops**
-
+**password**: Use the password found in Eng json bundle in **curbside-secrets**
+**email**: platform@rakutenready.com
 
 ### 3. Do the packaging
 
